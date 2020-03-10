@@ -42,7 +42,7 @@ public interface ILearning<O, A, AS extends ActionSpace<A>> {
 
     interface LConfiguration {
 
-        Integer getSeed();
+        Long getSeed();
 
         int getMaxEpochStep();
 

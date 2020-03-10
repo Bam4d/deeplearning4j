@@ -30,7 +30,7 @@ public class QLConfigurationTest {
         ObjectMapper mapper = new ObjectMapper();
         QLearning.QLConfiguration qlConfiguration =
                 new QLearning.QLConfiguration(
-                        123,    //Random seed
+                        123L,    //Random seed
                         200,    //Max step By epoch
                         8000, //Max step
                         150000, //Max size of experience replay

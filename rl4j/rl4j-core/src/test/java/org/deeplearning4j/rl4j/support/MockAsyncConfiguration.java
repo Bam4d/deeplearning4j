@@ -9,7 +9,7 @@ import org.deeplearning4j.rl4j.learning.async.AsyncConfiguration;
 @Value
 public class MockAsyncConfiguration implements AsyncConfiguration {
 
-    private Integer seed;
+    private Long seed;
     private int maxEpochStep;
     private int maxStep;
     private int numThread;

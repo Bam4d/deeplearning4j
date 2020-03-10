@@ -59,7 +59,7 @@ public class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends Asyn
         this.threadNumber = threadNumber;
         rnd = Nd4j.getRandom();
 
-        Integer seed = conf.getSeed();
+        Long seed = conf.getSeed();
         if(seed != null) {
             rnd.setSeed(seed + threadNumber);
         }

@@ -19,7 +19,7 @@ public class AsyncNStepQLearningThreadDiscreteTest {
         double gamma = 0.9;
         MockObservationSpace observationSpace = new MockObservationSpace();
         MockMDP mdpMock = new MockMDP(observationSpace);
-        AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration config = new AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration(0, 0, 0, 0, 0, 0, 0, 0, gamma, 0, 0, 0);
+        AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration config = new AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration(0L, 0, 0, 0, 0, 0, 0, 0, gamma, 0, 0, 0);
         MockDQN dqnMock = new MockDQN();
         IHistoryProcessor.Configuration hpConf = new IHistoryProcessor.Configuration(5, 1, 1, 1, 1, 0, 0, 2);
         MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(dqnMock);

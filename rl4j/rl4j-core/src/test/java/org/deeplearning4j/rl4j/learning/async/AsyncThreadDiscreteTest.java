@@ -32,7 +32,7 @@ public class AsyncThreadDiscreteTest {
         MockMDP mdpMock = new MockMDP(observationSpace);
         TrainingListenerList listeners = new TrainingListenerList();
         MockPolicy policyMock = new MockPolicy();
-        MockAsyncConfiguration config = new MockAsyncConfiguration(5, 100, 0, 0, 2, 5,0, 0, 0, 0);
+        MockAsyncConfiguration config = new MockAsyncConfiguration(5L, 100, 0, 0, 2, 5,0, 0, 0, 0);
         TestAsyncThreadDiscrete sut = new TestAsyncThreadDiscrete(asyncGlobalMock, mdpMock, listeners, 0, 0, policyMock, config, hpMock);
         sut.getLegacyMDPWrapper().setTransformProcess(MockMDP.buildTransformProcess(observationSpace.getShape(), hpConf.getSkipFrame(), hpConf.getHistoryLength()));
 

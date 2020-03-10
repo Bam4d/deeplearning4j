@@ -113,7 +113,7 @@ public class ALEMDP implements MDP<ALEMDP.GameScreen, Integer, DiscreteSpace> {
 
     public StepReply<GameScreen> step(Integer action) {
         double r = ale.act(actions[action]) * scaleFactor;
-        log.info(ale.getEpisodeFrameNumber() + " " + r + " " + action + " ");
+        //log.info(ale.getEpisodeFrameNumber() + " " + r + " " + action + " ");
         ale.getScreenRGB(screenBuffer);
         return new StepReply(new GameScreen(screenBuffer), r, ale.game_over(), null);
     }
