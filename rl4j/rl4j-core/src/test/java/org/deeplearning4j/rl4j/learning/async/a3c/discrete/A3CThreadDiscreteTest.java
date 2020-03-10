@@ -4,8 +4,7 @@ import org.deeplearning4j.nn.api.NeuralNetwork;
 import org.deeplearning4j.nn.gradient.Gradient;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.async.MiniTrans;
-import org.deeplearning4j.rl4j.learning.async.nstep.discrete.AsyncNStepQLearningDiscrete;
-import org.deeplearning4j.rl4j.learning.async.nstep.discrete.AsyncNStepQLearningThreadDiscrete;
+import org.deeplearning4j.rl4j.learning.configuration.A3CLearningConfiguration;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.deeplearning4j.rl4j.support.*;
@@ -31,7 +30,7 @@ public class A3CThreadDiscreteTest {
         double gamma = 0.9;
         MockObservationSpace observationSpace = new MockObservationSpace();
         MockMDP mdpMock = new MockMDP(observationSpace);
-        A3CDiscrete.A3CConfiguration config = new A3CDiscrete.A3CConfiguration(0L, 0, 0, 0, 0, 0, 0, gamma, 0);
+        A3CLearningConfiguration config = A3CLearningConfiguration.builder().gamma(0.9).build();
         MockActorCritic actorCriticMock = new MockActorCritic();
         IHistoryProcessor.Configuration hpConf = new IHistoryProcessor.Configuration(5, 1, 1, 1, 1, 0, 0, 2);
         MockAsyncGlobal<IActorCritic> asyncGlobalMock = new MockAsyncGlobal<IActorCritic>(actorCriticMock);
@@ -54,9 +53,9 @@ public class A3CThreadDiscreteTest {
                     Nd4j.zeros(5)
             };
             output[0].putScalar(i, outputs[i]);
-            minitransList.push(new MiniTrans<Integer>(obs, i, output, rewards[i]));
+            minitransList.push(new MiniTrans<>(obs, i, output, rewards[i]));
         }
-        minitransList.push(new MiniTrans<Integer>(null, 0, null, 4.0)); // The special batch-ending MiniTrans
+        minitransList.push(new MiniTrans<>(null, 0, null, 4.0)); // The special batch-ending MiniTrans
 
         // Act
         sut.calcGradient(actorCriticMock, minitransList);

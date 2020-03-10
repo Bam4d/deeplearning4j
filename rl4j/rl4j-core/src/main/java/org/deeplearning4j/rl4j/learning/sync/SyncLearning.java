@@ -63,7 +63,7 @@ public abstract class SyncLearning<O, A, AS extends ActionSpace<A>, NN extends N
     /**
      * This method will train the model<p>
      * The training stop when:<br>
-     * - the number of steps reaches the maximum defined in the configuration (see {@link LConfiguration#getMaxStep() LConfiguration.getMaxStep()})<br>
+     * - the number of steps reaches the maximum defined in the configuration (see {@link ILearningConfiguration#getMaxStep() LConfiguration.getMaxStep()})<br>
      * OR<br>
      * - a listener explicitly stops it<br>
      * <p>

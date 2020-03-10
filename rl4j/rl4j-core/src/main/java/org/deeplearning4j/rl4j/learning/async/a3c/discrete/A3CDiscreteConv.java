@@ -18,10 +18,12 @@ package org.deeplearning4j.rl4j.learning.async.a3c.discrete;
 
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
 import org.deeplearning4j.rl4j.learning.async.AsyncThread;
+import org.deeplearning4j.rl4j.learning.configuration.A3CLearningConfiguration;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.ac.ActorCriticFactoryCompGraph;
 import org.deeplearning4j.rl4j.network.ac.ActorCriticFactoryCompGraphStdConv;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
+import org.deeplearning4j.rl4j.network.configuration.ActorCriticNetworkConfiguration;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.util.DataManagerTrainingListener;
@@ -46,12 +48,12 @@ public class A3CDiscreteConv<O extends Encodable> extends A3CDiscrete<O> {
 
     @Deprecated
     public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic actorCritic,
-                    HistoryProcessor.Configuration hpconf, A3CConfiguration conf, IDataManager dataManager) {
+                           HistoryProcessor.Configuration hpconf, A3CLearningConfiguration conf, IDataManager dataManager) {
         this(mdp, actorCritic, hpconf, conf);
         addListener(new DataManagerTrainingListener(dataManager));
     }
     public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic IActorCritic,
-                           HistoryProcessor.Configuration hpconf, A3CConfiguration conf) {
+                           HistoryProcessor.Configuration hpconf, A3CLearningConfiguration conf) {
         super(mdp, IActorCritic, conf);
         this.hpconf = hpconf;
         setHistoryProcessor(hpconf);
@@ -59,21 +61,21 @@ public class A3CDiscreteConv<O extends Encodable> extends A3CDiscrete<O> {
 
     @Deprecated
     public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactoryCompGraph factory,
-                    HistoryProcessor.Configuration hpconf, A3CConfiguration conf, IDataManager dataManager) {
+                    HistoryProcessor.Configuration hpconf, A3CLearningConfiguration conf, IDataManager dataManager) {
         this(mdp, factory.buildActorCritic(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf, dataManager);
     }
     public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactoryCompGraph factory,
-                           HistoryProcessor.Configuration hpconf, A3CConfiguration conf) {
+                           HistoryProcessor.Configuration hpconf, A3CLearningConfiguration conf) {
         this(mdp, factory.buildActorCritic(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf);
     }
 
     @Deprecated
-    public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactoryCompGraphStdConv.Configuration netConf,
-                    HistoryProcessor.Configuration hpconf, A3CConfiguration conf, IDataManager dataManager) {
+    public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticNetworkConfiguration netConf,
+                    HistoryProcessor.Configuration hpconf, A3CLearningConfiguration conf, IDataManager dataManager) {
         this(mdp, new ActorCriticFactoryCompGraphStdConv(netConf), hpconf, conf, dataManager);
     }
-    public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactoryCompGraphStdConv.Configuration netConf,
-                           HistoryProcessor.Configuration hpconf, A3CConfiguration conf) {
+    public A3CDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticNetworkConfiguration netConf,
+                           HistoryProcessor.Configuration hpconf, A3CLearningConfiguration conf) {
         this(mdp, new ActorCriticFactoryCompGraphStdConv(netConf), hpconf, conf);
     }
 
