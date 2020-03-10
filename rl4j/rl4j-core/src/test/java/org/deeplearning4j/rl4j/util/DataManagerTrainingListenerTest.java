@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.deeplearning4j.rl4j.learning.IEpochTrainer;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.ILearning;
+import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListener;
 import org.deeplearning4j.rl4j.learning.sync.support.MockStatEntry;
 import org.deeplearning4j.rl4j.mdp.MDP;
@@ -162,7 +163,7 @@ public class DataManagerTrainingListenerTest {
         }
 
         @Override
-        public LConfiguration getConfiguration() {
+        public ILearningConfiguration getConfiguration() {
             return null;
         }
 

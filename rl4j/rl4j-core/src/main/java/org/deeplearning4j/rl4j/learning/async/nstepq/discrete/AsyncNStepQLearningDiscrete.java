@@ -14,36 +14,35 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
+package org.deeplearning4j.rl4j.learning.async.nstepq.discrete;
 
-import lombok.*;
-import org.deeplearning4j.rl4j.learning.async.AsyncConfiguration;
+import lombok.Getter;
 import org.deeplearning4j.rl4j.learning.async.AsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.AsyncLearning;
 import org.deeplearning4j.rl4j.learning.async.AsyncThread;
+import org.deeplearning4j.rl4j.learning.configuration.AsyncQLearningConfiguration;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
 import org.deeplearning4j.rl4j.policy.DQNPolicy;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
-import org.nd4j.linalg.factory.Nd4j;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
  */
 public abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
-                extends AsyncLearning<O, Integer, DiscreteSpace, IDQN> {
+        extends AsyncLearning<O, Integer, DiscreteSpace, IDQN> {
 
     @Getter
-    final public AsyncNStepQLConfiguration configuration;
+    final public AsyncQLearningConfiguration configuration;
     @Getter
     final private MDP<O, Integer, DiscreteSpace> mdp;
     @Getter
     final private AsyncGlobal<IDQN> asyncGlobal;
 
 
-    public AsyncNStepQLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, AsyncNStepQLConfiguration conf) {
+    public AsyncNStepQLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, AsyncQLearningConfiguration conf) {
         this.mdp = mdp;
         this.configuration = conf;
         this.asyncGlobal = new AsyncGlobal<>(dqn, conf, this);
@@ -62,25 +61,4 @@ public abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
         return new DQNPolicy<O>(getNeuralNet());
     }
 
-
-    @Data
-    @AllArgsConstructor
-    @Builder
-    @EqualsAndHashCode(callSuper = false)
-    public static class AsyncNStepQLConfiguration implements AsyncConfiguration {
-
-        Long seed;
-        int maxEpochStep;
-        int maxStep;
-        int numThread;
-        int nstep;
-        int targetDqnUpdateFreq;
-        int updateStart;
-        double rewardFactor;
-        double gamma;
-        double errorClamp;
-        float minEpsilon;
-        int epsilonNbStep;
-
-    }
 }

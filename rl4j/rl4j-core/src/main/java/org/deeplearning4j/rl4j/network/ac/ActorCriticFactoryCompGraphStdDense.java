@@ -16,8 +16,6 @@
 
 package org.deeplearning4j.rl4j.network.ac;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
@@ -29,12 +27,11 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
-import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.rl4j.network.configuration.ActorCriticDenseNetworkConfiguration;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
-import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 /**
@@ -45,7 +42,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 @Value
 public class ActorCriticFactoryCompGraphStdDense implements ActorCriticFactoryCompGraph {
 
-    Configuration conf;
+    ActorCriticDenseNetworkConfiguration conf;
 
     public ActorCriticCompGraph buildActorCritic(int[] numInputs, int numOutputs) {
         int nIn = 1;
@@ -65,27 +62,27 @@ public class ActorCriticFactoryCompGraphStdDense implements ActorCriticFactoryCo
                                                         "input");
 
 
-        for (int i = 1; i < conf.getNumLayer(); i++) {
+        for (int i = 1; i < conf.getNumLayers(); i++) {
             confB.addLayer(i + "", new DenseLayer.Builder().nIn(conf.getNumHiddenNodes()).nOut(conf.getNumHiddenNodes())
                             .activation(Activation.RELU).build(), (i - 1) + "");
         }
 
 
         if (conf.isUseLSTM()) {
-            confB.addLayer(getConf().getNumLayer() + "", new LSTM.Builder().activation(Activation.TANH)
-                            .nOut(conf.getNumHiddenNodes()).build(), (getConf().getNumLayer() - 1) + "");
+            confB.addLayer(getConf().getNumLayers() + "", new LSTM.Builder().activation(Activation.TANH)
+                            .nOut(conf.getNumHiddenNodes()).build(), (getConf().getNumLayers() - 1) + "");
 
             confB.addLayer("value", new RnnOutputLayer.Builder(LossFunctions.LossFunction.MSE).activation(Activation.IDENTITY)
-                            .nOut(1).build(), getConf().getNumLayer() + "");
+                            .nOut(1).build(), getConf().getNumLayers() + "");
 
             confB.addLayer("softmax", new RnnOutputLayer.Builder(new ActorCriticLoss()).activation(Activation.SOFTMAX)
-                            .nOut(numOutputs).build(), getConf().getNumLayer() + "");
+                            .nOut(numOutputs).build(), getConf().getNumLayers() + "");
         } else {
             confB.addLayer("value", new OutputLayer.Builder(LossFunctions.LossFunction.MSE).activation(Activation.IDENTITY)
-                            .nOut(1).build(), (getConf().getNumLayer() - 1) + "");
+                            .nOut(1).build(), (getConf().getNumLayers() - 1) + "");
 
             confB.addLayer("softmax", new OutputLayer.Builder(new ActorCriticLoss()).activation(Activation.SOFTMAX)
-                            .nOut(numOutputs).build(), (getConf().getNumLayer() - 1) + "");
+                            .nOut(numOutputs).build(), (getConf().getNumLayers() - 1) + "");
         }
 
         confB.setOutputs("value", "softmax");
@@ -102,19 +99,5 @@ public class ActorCriticFactoryCompGraphStdDense implements ActorCriticFactoryCo
 
         return new ActorCriticCompGraph(model);
     }
-
-    @AllArgsConstructor
-    @Builder
-    @Value
-    public static class Configuration {
-
-        int numLayer;
-        int numHiddenNodes;
-        double l2;
-        IUpdater updater;
-        TrainingListener[] listeners;
-        boolean useLSTM;
-    }
-
 
 }

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
+package org.deeplearning4j.rl4j.learning.async.nstepq.discrete;
 
 import lombok.Getter;
 import org.deeplearning4j.nn.gradient.Gradient;
@@ -22,6 +22,7 @@ import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.learning.async.AsyncThreadDiscrete;
 import org.deeplearning4j.rl4j.learning.async.IAsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.MiniTrans;
+import org.deeplearning4j.rl4j.learning.configuration.AsyncQLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
@@ -42,7 +43,7 @@ import java.util.Stack;
 public class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IDQN> {
 
     @Getter
-    final protected AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration conf;
+    final protected AsyncQLearningConfiguration conf;
     @Getter
     final protected IAsyncGlobal<IDQN> asyncGlobal;
     @Getter
@@ -51,7 +52,7 @@ public class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends Asyn
     final private Random rnd;
 
     public AsyncNStepQLearningThreadDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IAsyncGlobal<IDQN> asyncGlobal,
-                                             AsyncNStepQLearningDiscrete.AsyncNStepQLConfiguration conf,
+                                             AsyncQLearningConfiguration conf,
                                              TrainingListenerList listeners, int threadNumber, int deviceNum) {
         super(asyncGlobal, mdp, listeners, threadNumber, deviceNum);
         this.conf = conf;

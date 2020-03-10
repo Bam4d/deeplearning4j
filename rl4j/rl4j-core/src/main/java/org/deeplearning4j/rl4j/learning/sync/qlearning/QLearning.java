@@ -16,12 +16,16 @@
 
 package org.deeplearning4j.rl4j.learning.sync.qlearning;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.EpochStepCounter;
+import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.ExpReplay;
 import org.deeplearning4j.rl4j.learning.sync.IExpReplay;
 import org.deeplearning4j.rl4j.learning.sync.SyncLearning;
@@ -59,11 +63,11 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
 
     protected abstract LegacyMDPWrapper<O, A, AS> getLegacyMDPWrapper();
 
-    public QLearning(QLConfiguration conf) {
+    public QLearning(QLearningConfiguration conf) {
         this(conf, getSeededRandom(conf.getSeed()));
     }
 
-    public QLearning(QLConfiguration conf, Random random) {
+    public QLearning(QLearningConfiguration conf, Random random) {
         expReplay = new ExpReplay<>(conf.getExpRepMaxSize(), conf.getBatchSize(), random);
     }
 
@@ -95,7 +99,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         return getQNetwork();
     }
 
-    public abstract QLConfiguration getConfiguration();
+    public abstract QLearningConfiguration getConfiguration();
 
     protected abstract void preEpoch();
 
@@ -212,60 +216,5 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         StepReply<O> stepReply;
 
     }
-
-    @Data
-    @AllArgsConstructor
-    @Builder
-    @EqualsAndHashCode(callSuper = false)
-    @JsonDeserialize(builder = QLConfiguration.QLConfigurationBuilder.class)
-    public static class QLConfiguration implements LConfiguration {
-
-        @Builder.Default
-        Long seed = System.currentTimeMillis();
-
-        @Builder.Default
-        int maxEpochStep = 200;
-
-        @Builder.Default
-        int maxStep = 150000;
-
-        @Builder.Default
-        int expRepMaxSize = 150000;
-
-        @Builder.Default
-        int batchSize = 32;
-
-        @Builder.Default
-        int targetDqnUpdateFreq = 100;
-
-        @Builder.Default
-        int updateStart = 10;
-
-        @Builder.Default
-        double rewardFactor = 0.1;
-
-        @Builder.Default
-        double gamma = 0.99;
-
-        @Builder.Default
-        double errorClamp = 1.0;
-
-        //@Builder.Default
-        //float maxEpsilon = 1.0f;
-
-        @Builder.Default
-        double minEpsilon = 0.1f;
-
-        @Builder.Default
-        int epsilonNbStep = 10000;
-
-        @Builder.Default
-        boolean doubleDQN = false;
-
-        @JsonPOJOBuilder(withPrefix = "")
-        public static final class QLConfigurationBuilder {
-        }
-    }
-
 
 }

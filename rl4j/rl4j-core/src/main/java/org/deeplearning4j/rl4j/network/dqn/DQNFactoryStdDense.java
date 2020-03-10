@@ -16,9 +16,6 @@
 
 package org.deeplearning4j.rl4j.network.dqn;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Singular;
 import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -27,15 +24,12 @@ import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
-import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.rl4j.network.configuration.DQNDenseNetworkConfiguration;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
-import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
-
-import java.util.List;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/13/16.
@@ -44,8 +38,7 @@ import java.util.List;
 @Value
 public class DQNFactoryStdDense implements DQNFactory {
 
-
-    Configuration conf;
+    DQNDenseNetworkConfiguration conf;
 
     public DQN buildDQN(int[] numInputs, int numOutputs) {
         int nIn = 1;
@@ -68,12 +61,12 @@ public class DQNFactoryStdDense implements DQNFactory {
                 );
 
 
-        for (int i = 1; i < conf.getNumLayer(); i++) {
+        for (int i = 1; i < conf.getNumLayers(); i++) {
             confB.layer(i, new DenseLayer.Builder().nIn(conf.getNumHiddenNodes()).nOut(conf.getNumHiddenNodes())
                     .activation(Activation.RELU).build());
         }
 
-        confB.layer(conf.getNumLayer(),
+        confB.layer(conf.getNumLayers(),
                 new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
                         .activation(Activation.IDENTITY)
                         .nIn(conf.getNumHiddenNodes())
@@ -92,19 +85,5 @@ public class DQNFactoryStdDense implements DQNFactory {
         }
         return new DQN(model);
     }
-
-    @AllArgsConstructor
-    @Value
-    @Builder
-    public static class Configuration {
-
-        int numLayer;
-        int numHiddenNodes;
-        double l2;
-        IUpdater updater;
-        @Singular
-        List<TrainingListener> listeners;
-    }
-
 
 }

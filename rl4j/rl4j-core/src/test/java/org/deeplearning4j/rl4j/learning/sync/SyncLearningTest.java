@@ -1,6 +1,9 @@
 package org.deeplearning4j.rl4j.learning.sync;
 
 import lombok.Getter;
+import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
+import org.deeplearning4j.rl4j.learning.configuration.LearningConfiguration;
+import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import org.deeplearning4j.rl4j.learning.sync.support.MockStatEntry;
 import org.deeplearning4j.rl4j.mdp.MDP;
@@ -17,7 +20,7 @@ public class SyncLearningTest {
     @Test
     public void when_training_expect_listenersToBeCalled() {
         // Arrange
-        QLearning.QLConfiguration lconfig = QLearning.QLConfiguration.builder().maxStep(10).build();
+        QLearningConfiguration lconfig = QLearningConfiguration.builder().maxStep(10).build();
         MockTrainingListener listener = new MockTrainingListener();
         MockSyncLearning sut = new MockSyncLearning(lconfig);
         sut.addListener(listener);
@@ -34,7 +37,7 @@ public class SyncLearningTest {
     @Test
     public void when_trainingStartCanContinueFalse_expect_trainingStopped() {
         // Arrange
-        QLearning.QLConfiguration lconfig = QLearning.QLConfiguration.builder().maxStep(10).build();
+        QLearningConfiguration lconfig = QLearningConfiguration.builder().maxStep(10).build();
         MockTrainingListener listener = new MockTrainingListener();
         MockSyncLearning sut = new MockSyncLearning(lconfig);
         sut.addListener(listener);
@@ -52,7 +55,7 @@ public class SyncLearningTest {
     @Test
     public void when_newEpochCanContinueFalse_expect_trainingStopped() {
         // Arrange
-        QLearning.QLConfiguration lconfig = QLearning.QLConfiguration.builder().maxStep(10).build();
+        QLearningConfiguration lconfig = QLearningConfiguration.builder().maxStep(10).build();
         MockTrainingListener listener = new MockTrainingListener();
         MockSyncLearning sut = new MockSyncLearning(lconfig);
         sut.addListener(listener);
@@ -70,7 +73,7 @@ public class SyncLearningTest {
     @Test
     public void when_epochTrainingResultCanContinueFalse_expect_trainingStopped() {
         // Arrange
-        QLearning.QLConfiguration lconfig = QLearning.QLConfiguration.builder().maxStep(10).build();
+        LearningConfiguration lconfig = QLearningConfiguration.builder().maxStep(10).build();
         MockTrainingListener listener = new MockTrainingListener();
         MockSyncLearning sut = new MockSyncLearning(lconfig);
         sut.addListener(listener);
@@ -87,12 +90,12 @@ public class SyncLearningTest {
 
     public static class MockSyncLearning extends SyncLearning {
 
-        private final LConfiguration conf;
+        private final ILearningConfiguration conf;
 
         @Getter
         private int currentEpochStep = 0;
 
-        public MockSyncLearning(LConfiguration conf) {
+        public MockSyncLearning(ILearningConfiguration conf) {
             this.conf = conf;
         }
 
@@ -119,7 +122,7 @@ public class SyncLearningTest {
         }
 
         @Override
-        public LConfiguration getConfiguration() {
+        public ILearningConfiguration getConfiguration() {
             return conf;
         }
 

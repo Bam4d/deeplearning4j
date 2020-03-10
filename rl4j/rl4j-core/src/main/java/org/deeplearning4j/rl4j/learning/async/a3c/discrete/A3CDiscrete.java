@@ -16,11 +16,15 @@
 
 package org.deeplearning4j.rl4j.learning.async.a3c.discrete;
 
-import lombok.*;
-import org.deeplearning4j.rl4j.learning.async.AsyncConfiguration;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.deeplearning4j.rl4j.learning.async.AsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.AsyncLearning;
 import org.deeplearning4j.rl4j.learning.async.AsyncThread;
+import org.deeplearning4j.rl4j.learning.configuration.A3CLearningConfiguration;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.deeplearning4j.rl4j.policy.ACPolicy;
@@ -32,15 +36,14 @@ import org.nd4j.linalg.factory.Nd4j;
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/23/16.
  * Training for A3C in the Discrete Domain
- *
+ * <p>
  * All methods are fully implemented as described in the
  * https://arxiv.org/abs/1602.01783 paper.
- *
  */
 public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, Integer, DiscreteSpace, IActorCritic> {
 
     @Getter
-    final public A3CConfiguration configuration;
+    final public A3CLearningConfiguration configuration;
     @Getter
     final protected MDP<O, Integer, DiscreteSpace> mdp;
     final private IActorCritic iActorCritic;
@@ -49,7 +52,7 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
     @Getter
     final private ACPolicy<O> policy;
 
-    public A3CDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic iActorCritic, A3CConfiguration conf) {
+    public A3CDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic iActorCritic, A3CLearningConfiguration conf) {
         this.iActorCritic = iActorCritic;
         this.mdp = mdp;
         this.configuration = conf;
@@ -57,7 +60,7 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
 
         Long seed = conf.getSeed();
         Random rnd = Nd4j.getRandom();
-        if(seed != null) {
+        if (seed != null) {
             rnd.setSeed(seed);
         }
 
@@ -65,32 +68,11 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
     }
 
     protected AsyncThread newThread(int i, int deviceNum) {
-        return new A3CThreadDiscrete(mdp.newInstance(), asyncGlobal, getConfiguration(), deviceNum, getListeners(), i);
+        return new A3CThreadDiscrete(mdp.newInstance(), asyncGlobal, this.getConfiguration(), deviceNum, getListeners(), i);
     }
 
     public IActorCritic getNeuralNet() {
         return iActorCritic;
     }
 
-    @Data
-    @AllArgsConstructor
-    @Builder
-    @EqualsAndHashCode(callSuper = false)
-    public static class A3CConfiguration implements AsyncConfiguration {
-
-        Long seed;
-        int maxEpochStep;
-        int maxStep;
-        int numThread;
-        int nstep;
-        int updateStart;
-        double rewardFactor;
-        double gamma;
-        double errorClamp;
-
-        public int getTargetDqnUpdateFreq() {
-            return -1;
-        }
-
-    }
 }

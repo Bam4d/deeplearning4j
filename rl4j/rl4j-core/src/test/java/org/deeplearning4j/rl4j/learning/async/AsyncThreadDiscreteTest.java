@@ -2,6 +2,7 @@ package org.deeplearning4j.rl4j.learning.async;
 
 import org.deeplearning4j.nn.gradient.Gradient;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
+import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.observation.Observation;
@@ -32,7 +33,7 @@ public class AsyncThreadDiscreteTest {
         MockMDP mdpMock = new MockMDP(observationSpace);
         TrainingListenerList listeners = new TrainingListenerList();
         MockPolicy policyMock = new MockPolicy();
-        MockAsyncConfiguration config = new MockAsyncConfiguration(5L, 100, 0, 0, 2, 5,0, 0, 0, 0);
+        MockAsyncConfiguration config = new MockAsyncConfiguration(5L, 100, 0,0, 0, 0, 0, 0, 2, 5);
         TestAsyncThreadDiscrete sut = new TestAsyncThreadDiscrete(asyncGlobalMock, mdpMock, listeners, 0, 0, policyMock, config, hpMock);
         sut.getLegacyMDPWrapper().setTransformProcess(MockMDP.buildTransformProcess(observationSpace.getShape(), hpConf.getSkipFrame(), hpConf.getHistoryLength()));
 
@@ -173,7 +174,7 @@ public class AsyncThreadDiscreteTest {
         }
 
         @Override
-        protected AsyncConfiguration getConf() {
+        protected IAsyncLearningConfiguration getConf() {
             return config;
         }
 

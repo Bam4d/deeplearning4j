@@ -16,8 +16,6 @@
 
 package org.deeplearning4j.rl4j.network.dqn;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -28,12 +26,11 @@ import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
-import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.rl4j.network.configuration.NetworkConfiguration;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
-import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 /**
@@ -43,7 +40,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 public class DQNFactoryStdConv implements DQNFactory {
 
 
-    Configuration conf;
+    NetworkConfiguration conf;
 
     public DQN buildDQN(int shapeInputs[], int numOutputs) {
 
@@ -78,18 +75,6 @@ public class DQNFactoryStdConv implements DQNFactory {
         }
 
         return new DQN(model);
-    }
-
-
-    @AllArgsConstructor
-    @Builder
-    @Value
-    public static class Configuration {
-
-        double learningRate;
-        double l2;
-        IUpdater updater;
-        TrainingListener[] listeners;
     }
 
 }
