@@ -55,7 +55,7 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
         this.configuration = conf;
         asyncGlobal = new AsyncGlobal<>(iActorCritic, conf, this);
 
-        Integer seed = conf.getSeed();
+        Long seed = conf.getSeed();
         Random rnd = Nd4j.getRandom();
         if(seed != null) {
             rnd.setSeed(seed);
@@ -78,7 +78,7 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
     @EqualsAndHashCode(callSuper = false)
     public static class A3CConfiguration implements AsyncConfiguration {
 
-        Integer seed;
+        Long seed;
         int maxEpochStep;
         int maxStep;
         int numThread;

@@ -61,7 +61,7 @@ public class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<
         this.asyncGlobal = asyncGlobal;
         this.threadNumber = threadNumber;
 
-        Integer seed = conf.getSeed();
+        Long seed = conf.getSeed();
         rnd = Nd4j.getRandom();
         if(seed != null) {
             rnd.setSeed(seed + threadNumber);

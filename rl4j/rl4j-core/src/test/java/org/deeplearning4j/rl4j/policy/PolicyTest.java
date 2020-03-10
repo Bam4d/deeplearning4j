@@ -186,7 +186,7 @@ public class PolicyTest {
             new int[] { 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4 });
         MockMDP mdp = new MockMDP(observationSpace, 30, random);
 
-        QLearning.QLConfiguration conf = new QLearning.QLConfiguration(0, 0, 0, 5, 1, 0,
+        QLearning.QLConfiguration conf = new QLearning.QLConfiguration(0L, 0, 0, 5, 1, 0,
                 0, 1.0, 0, 0, 0, 0, true);
         MockNeuralNet nnMock = new MockNeuralNet();
         IHistoryProcessor.Configuration hpConf = new IHistoryProcessor.Configuration(5, 4, 4, 4, 4, 0, 0, 2);

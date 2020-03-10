@@ -31,7 +31,7 @@ public class A3CThreadDiscreteTest {
         double gamma = 0.9;
         MockObservationSpace observationSpace = new MockObservationSpace();
         MockMDP mdpMock = new MockMDP(observationSpace);
-        A3CDiscrete.A3CConfiguration config = new A3CDiscrete.A3CConfiguration(0, 0, 0, 0, 0, 0, 0, gamma, 0);
+        A3CDiscrete.A3CConfiguration config = new A3CDiscrete.A3CConfiguration(0L, 0, 0, 0, 0, 0, 0, gamma, 0);
         MockActorCritic actorCriticMock = new MockActorCritic();
         IHistoryProcessor.Configuration hpConf = new IHistoryProcessor.Configuration(5, 1, 1, 1, 1, 0, 0, 2);
         MockAsyncGlobal<IActorCritic> asyncGlobalMock = new MockAsyncGlobal<IActorCritic>(actorCriticMock);

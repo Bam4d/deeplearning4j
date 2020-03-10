@@ -45,11 +45,10 @@ import java.util.ArrayList;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/18/16.
- *
+ * <p>
  * DQN or Deep Q-Learning in the Discrete domain
- *
+ * <p>
  * http://arxiv.org/abs/1312.5602
- *
  */
 public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O, Integer, DiscreteSpace> {
 
@@ -78,8 +77,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         return mdp;
     }
 
-    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLConfiguration conf,
-                             int epsilonNbStep) {
+    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLConfiguration conf, int epsilonNbStep) {
         this(mdp, dqn, conf, epsilonNbStep, Nd4j.getRandomFactory().getNewRandomInstance(conf.getSeed()));
     }
 
@@ -125,6 +123,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
 
     /**
      * Single step of training
+     *
      * @param obs last obs
      * @return relevant info for next step
      */
@@ -136,7 +135,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         int skipFrame = isHistoryProcessor ? getHistoryProcessor().getConf().getSkipFrame() : 1;
         int historyLength = isHistoryProcessor ? getHistoryProcessor().getConf().getHistoryLength() : 1;
         int updateStart = getConfiguration().getUpdateStart()
-                        + ((getConfiguration().getBatchSize() + historyLength) * skipFrame);
+                + ((getConfiguration().getBatchSize() + historyLength) * skipFrame);
 
         Double maxQ = Double.NaN; //ignore if Nan for stats
 
@@ -161,7 +160,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         if (!obs.isSkipped()) {
 
             // Add experience
-            if(pendingTransition != null) {
+            if (pendingTransition != null) {
                 pendingTransition.setNextObservation(obs);
                 getExpReplay().store(pendingTransition);
             }
@@ -188,7 +187,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
 
     @Override
     protected void finishEpoch(Observation observation) {
-        if(pendingTransition != null) {
+        if (pendingTransition != null) {
             pendingTransition.setNextObservation(observation);
             getExpReplay().store(pendingTransition);
         }

@@ -69,7 +69,7 @@ public abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
     @EqualsAndHashCode(callSuper = false)
     public static class AsyncNStepQLConfiguration implements AsyncConfiguration {
 
-        Integer seed;
+        Long seed;
         int maxEpochStep;
         int maxStep;
         int numThread;

@@ -42,7 +42,7 @@ public class QLearningDiscreteTest {
 
         int initStepCount = 8;
 
-        QLearning.QLConfiguration conf = new QLearning.QLConfiguration(0, 24, 0, 5, 1, 1000,
+        QLearning.QLConfiguration conf = new QLearning.QLConfiguration(0L, 24, 0, 5, 1, 1000,
                 initStepCount, 1.0, 0, 0, 0, 0, true);
         MockDataManager dataManager = new MockDataManager(false);
         MockExpReplay expReplay = new MockExpReplay();

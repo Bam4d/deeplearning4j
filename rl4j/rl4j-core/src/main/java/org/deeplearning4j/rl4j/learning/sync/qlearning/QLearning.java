@@ -67,7 +67,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         expReplay = new ExpReplay<>(conf.getExpRepMaxSize(), conf.getBatchSize(), random);
     }
 
-    private static Random getSeededRandom(Integer seed) {
+    private static Random getSeededRandom(Long seed) {
         Random rnd = Nd4j.getRandom();
         if(seed != null) {
             rnd.setSeed(seed);
@@ -198,7 +198,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         double reward;
         int episodeLength;
         List<Double> scores;
-        float epsilon;
+        double epsilon;
         double startQ;
         double meanQ;
     }
@@ -220,19 +220,47 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
     @JsonDeserialize(builder = QLConfiguration.QLConfigurationBuilder.class)
     public static class QLConfiguration implements LConfiguration {
 
-        Integer seed;
-        int maxEpochStep;
-        int maxStep;
-        int expRepMaxSize;
-        int batchSize;
-        int targetDqnUpdateFreq;
-        int updateStart;
-        double rewardFactor;
-        double gamma;
-        double errorClamp;
-        float minEpsilon;
-        int epsilonNbStep;
-        boolean doubleDQN;
+        @Builder.Default
+        Long seed = System.currentTimeMillis();
+
+        @Builder.Default
+        int maxEpochStep = 200;
+
+        @Builder.Default
+        int maxStep = 150000;
+
+        @Builder.Default
+        int expRepMaxSize = 150000;
+
+        @Builder.Default
+        int batchSize = 32;
+
+        @Builder.Default
+        int targetDqnUpdateFreq = 100;
+
+        @Builder.Default
+        int updateStart = 10;
+
+        @Builder.Default
+        double rewardFactor = 0.1;
+
+        @Builder.Default
+        double gamma = 0.99;
+
+        @Builder.Default
+        double errorClamp = 1.0;
+
+        //@Builder.Default
+        //float maxEpsilon = 1.0f;
+
+        @Builder.Default
+        double minEpsilon = 0.1f;
+
+        @Builder.Default
+        int epsilonNbStep = 10000;
+
+        @Builder.Default
+        boolean doubleDQN = false;
 
         @JsonPOJOBuilder(withPrefix = "")
         public static final class QLConfigurationBuilder {
