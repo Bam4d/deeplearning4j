@@ -11,7 +11,7 @@ import java.util.List;
 public class MockExperienceHandler implements ExperienceHandler<Integer, Transition<Integer>> {
     public List<StateActionPair<Integer>> addExperienceArgs = new ArrayList<StateActionPair<Integer>>();
     public Observation finalObservation;
-    public boolean isGenerateTrainingBatchCalled;
+    public boolean isGetExperienceCalled;
     public boolean isResetCalled;
 
     @Override
@@ -29,7 +29,7 @@ public class MockExperienceHandler implements ExperienceHandler<Integer, Transit
         isGenerateTrainingBatchCalled = true;
         return new ArrayList<Transition<Integer>>() {
             {
-                add(new Transition<Integer>(null, 0, 0.0, false));
+                add(new Transition<>(null, 0, 0.0, false));
             }
         };
     }
