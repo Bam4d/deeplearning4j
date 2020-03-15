@@ -24,6 +24,9 @@ import lombok.Setter;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.experience.ExperienceHandler;
 import org.deeplearning4j.rl4j.experience.StateActionExperienceHandler;
+import org.deeplearning4j.rl4j.experience.ExperienceHandler;
+import org.deeplearning4j.rl4j.experience.StateActionExperienceHandler;
+import org.deeplearning4j.rl4j.experience.StateActionPair;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
@@ -31,6 +34,10 @@ import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
+
+import java.util.Stack;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.

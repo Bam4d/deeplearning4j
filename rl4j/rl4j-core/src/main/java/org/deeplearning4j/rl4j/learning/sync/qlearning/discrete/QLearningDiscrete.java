@@ -47,6 +47,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import java.util.List;
 
 
+
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/18/16.
  * <p>

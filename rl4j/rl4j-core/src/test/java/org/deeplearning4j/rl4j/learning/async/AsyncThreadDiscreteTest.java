@@ -131,6 +131,7 @@ public class AsyncThreadDiscreteTest {
         private final MockAsyncConfiguration config;
 
         public final List<SubEpochReturn> trainSubEpochResults = new ArrayList<SubEpochReturn>();
+        public final List<Stack<MiniTrans<Integer>>> rewards = new ArrayList<Stack<MiniTrans<Integer>>>();
 
         public TestAsyncThreadDiscrete(MockAsyncGlobal asyncGlobal, MDP<MockEncodable, Integer, DiscreteSpace> mdp,
                                        TrainingListenerList listeners, int threadNumber, int deviceNum, MockPolicy policy,
