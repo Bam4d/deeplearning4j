@@ -165,7 +165,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
 
             // Update NN
             // FIXME: maybe start updating when experience replay has reached a certain size instead of using "updateStart"?
-            if (getStepCounter() > updateStart) {
+            if (this.getStepCount() > updateStart) {
                 DataSet targets = setTarget(experienceHandler.generateTrainingBatch());
                 getQNetwork().fit(targets.getFeatures(), targets.getLabels());
             }

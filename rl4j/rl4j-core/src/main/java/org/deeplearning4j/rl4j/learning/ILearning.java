@@ -33,7 +33,7 @@ public interface ILearning<O, A, AS extends ActionSpace<A>> {
 
     void train();
 
-    int getStepCounter();
+    int getStepCount();
 
     ILearningConfiguration getConfiguration();
 

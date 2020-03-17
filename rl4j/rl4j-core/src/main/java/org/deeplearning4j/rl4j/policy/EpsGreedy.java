@@ -57,8 +57,8 @@ public class EpsGreedy<O, A, AS extends ActionSpace<A>> extends Policy<O, A> {
     public A nextAction(INDArray input) {
 
         double ep = getEpsilon();
-        if (learning.getStepCounter() % 500 == 1)
-            log.info("EP: " + ep + " " + learning.getStepCounter());
+        if (learning.getStepCount() % 500 == 1)
+            log.info("EP: " + ep + " " + learning.getStepCount());
         if (rnd.nextDouble() > ep)
             return policy.nextAction(input);
         else
