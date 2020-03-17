@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2019 Skymind, Inc.
- * Copyright (c) 2020 Konduit K.K.
+ * Copyright (c) 2015-2018 Skymind, Inc.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
@@ -18,15 +17,18 @@
 package org.deeplearning4j.rl4j.learning.async;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.nn.gradient.Gradient;
-import org.deeplearning4j.rl4j.learning.configuration.AsyncQLearningConfiguration;
-import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.nd4j.linalg.primitives.Pair;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
@@ -52,69 +54,77 @@ import java.util.concurrent.atomic.AtomicInteger;
  * structure
  */
 @Slf4j
-public class AsyncGlobal<NN extends NeuralNet> extends Thread implements IAsyncGlobal<NN> {
+public class AsyncGlobal<NN extends NeuralNet> implements IAsyncGlobal<NN> {
 
     @Getter
     final private NN current;
-    final private ConcurrentLinkedQueue<Pair<Gradient[], Integer>> queue;
-    final private IAsyncLearningConfiguration configuration;
-    private final IAsyncLearning learning;
-    @Getter
-    private AtomicInteger T = new AtomicInteger(0);
-    @Getter
-    private NN target;
-    @Getter
-    private boolean running = true;
 
-    public AsyncGlobal(NN initial, IAsyncLearningConfiguration configuration, IAsyncLearning learning) {
+    private NN target;
+
+    final private AsyncConfiguration a3cc;
+
+    @Getter
+    private final Lock updateLock;
+
+    /**
+     * The number of times the gradient has been updated by worker threads
+     */
+    @Getter
+    private int workerUpdateCount;
+
+    @Getter
+    private int stepCount;
+
+    public AsyncGlobal(NN initial, AsyncConfiguration a3cc) {
         this.current = initial;
         target = (NN) initial.clone();
-        this.configuration = configuration;
-        this.learning = learning;
-        queue = new ConcurrentLinkedQueue<>();
+        this.a3cc = a3cc;
+
+        // This is used to sync between
+        updateLock = new ReentrantLock();
     }
 
     public boolean isTrainingComplete() {
-        return T.get() >= configuration.getMaxStep();
+        return stepCount >= a3cc.getMaxStep();
     }
 
-    public void enqueue(Gradient[] gradient, Integer nstep) {
-        if (running && !isTrainingComplete()) {
-            queue.add(new Pair<>(gradient, nstep));
+    public void applyGradient(Gradient[] gradient, int nstep) {
+
+        if (isTrainingComplete()) {
+            return;
         }
+
+        try {
+            updateLock.lock();
+
+            current.applyGradient(gradient, nstep);
+
+            stepCount += nstep;
+            workerUpdateCount++;
+
+            //TODO: getTargetDqnUpdateFrequency is renamed as part of https://github.com/KonduitAI/deeplearning4j/pull/326 to getTargetUpdateFrequency
+            int targetUpdateFrequency = a3cc.getTargetDqnUpdateFreq();
+
+            // If we have a target update frequency, this means we only want to update the workers after a certain number of async updates
+            // This can lead to more stable training
+            if (targetUpdateFrequency != -1 && workerUpdateCount % targetUpdateFrequency == 0) {
+                log.info("Updating target network at {} episodes", workerUpdateCount);
+            } else {
+                target.copy(current);
+            }
+        } finally {
+            updateLock.unlock();
+        }
+
     }
 
     @Override
-    public void run() {
-
-        while (!isTrainingComplete() && running) {
-            if (!queue.isEmpty()) {
-                Pair<Gradient[], Integer> pair = queue.poll();
-                T.addAndGet(pair.getSecond());
-                Gradient[] gradient = pair.getFirst();
-                synchronized (this) {
-                    current.applyGradient(gradient, pair.getSecond());
-                }
-                if (configuration.getLearnerUpdateFrequency() != -1  && T.get() / configuration.getLearnerUpdateFrequency() > (T.get() - pair.getSecond())
-                        / configuration.getLearnerUpdateFrequency()) {
-                    log.info("TARGET UPDATE at T = " + T.get());
-                    synchronized (this) {
-                        target.copy(current);
-                    }
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Force the immediate termination of the AsyncGlobal instance. Queued work items will be discarded and the AsyncLearning instance will be forced to terminate too.
-     */
-    public void terminate() {
-        if (running) {
-            running = false;
-            queue.clear();
-            learning.terminate();
+    public NN getTarget() {
+        try {
+            updateLock.lock();
+            return target;
+        } finally {
+            updateLock.unlock();
         }
     }
 

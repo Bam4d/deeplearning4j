@@ -50,7 +50,7 @@ public abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
     public AsyncNStepQLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, AsyncQLearningConfiguration conf) {
         this.mdp = mdp;
         this.configuration = conf;
-        this.asyncGlobal = new AsyncGlobal<>(dqn, conf, this);
+        this.asyncGlobal = new AsyncGlobal<>(dqn, conf);
     }
 
     @Override

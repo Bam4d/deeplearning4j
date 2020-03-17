@@ -22,9 +22,10 @@ public class QLearningUpdateAlgorithmTest {
         MockDQN dqnMock = new MockDQN();
         MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(dqnMock);
         UpdateAlgorithm sut = new QLearningUpdateAlgorithm(asyncGlobalMock, new int[] { 1 }, 1, -1, 1.0);
+        final Observation observation = new Observation(Nd4j.zeros(1));
         List<StateActionPair<Integer>> experience = new ArrayList<StateActionPair<Integer>>() {
             {
-                add(new StateActionPair<Integer>(new Observation(Nd4j.zeros(1)), 0, 0.0, true));
+                add(new StateActionPair<Integer>(observation, 0, 0.0, true));
             }
         };
 
@@ -41,9 +42,10 @@ public class QLearningUpdateAlgorithmTest {
         MockDQN globalDQNMock = new MockDQN();
         MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(globalDQNMock);
         UpdateAlgorithm sut = new QLearningUpdateAlgorithm(asyncGlobalMock, new int[] { 2 }, 2, -1, 1.0);
+        final Observation observation = new Observation(Nd4j.create(new double[] { -123.0, -234.0 }));
         List<StateActionPair<Integer>> experience = new ArrayList<StateActionPair<Integer>>() {
             {
-                add(new StateActionPair<Integer>(new Observation(Nd4j.create(new double[] { -123.0, -234.0 })), 0, 0.0, false));
+                add(new StateActionPair<Integer>(observation, 0, 0.0, false));
             }
         };
         MockDQN dqnMock = new MockDQN();
@@ -63,9 +65,10 @@ public class QLearningUpdateAlgorithmTest {
         MockDQN globalDQNMock = new MockDQN();
         MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(globalDQNMock);
         UpdateAlgorithm sut = new QLearningUpdateAlgorithm(asyncGlobalMock, new int[] { 2 }, 2, 1, 1.0);
+        final Observation observation = new Observation(Nd4j.create(new double[] { -123.0, -234.0 }));
         List<StateActionPair<Integer>> experience = new ArrayList<StateActionPair<Integer>>() {
             {
-                add(new StateActionPair<Integer>(new Observation(Nd4j.create(new double[] { -123.0, -234.0 })), 0, 0.0, false));
+                add(new StateActionPair<Integer>(observation, 0, 0.0, false));
             }
         };
         MockDQN dqnMock = new MockDQN();
