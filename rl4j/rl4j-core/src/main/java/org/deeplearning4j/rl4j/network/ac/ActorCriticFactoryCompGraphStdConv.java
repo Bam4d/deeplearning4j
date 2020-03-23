@@ -16,6 +16,8 @@
 
 package org.deeplearning4j.rl4j.network.ac;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
@@ -27,12 +29,16 @@ import org.deeplearning4j.nn.conf.preprocessor.FeedForwardToRnnPreProcessor;
 import org.deeplearning4j.nn.conf.preprocessor.RnnToCnnPreProcessor;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.rl4j.network.configuration.ActorCriticNetworkConfiguration;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
+import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+
+import java.util.Arrays;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/9/16.
@@ -103,6 +109,30 @@ public class ActorCriticFactoryCompGraphStdConv implements ActorCriticFactoryCom
         }
 
         return new ActorCriticCompGraph(model);
+    }
+
+    @AllArgsConstructor
+    @Builder
+    @Value
+    @Deprecated
+    public static class Configuration {
+
+        double l2;
+        IUpdater updater;
+        TrainingListener[] listeners;
+        boolean useLSTM;
+
+        /**
+         * Converts the deprecated Configuration to the new NetworkConfiguration format
+         */
+        public ActorCriticNetworkConfiguration toNetworkConfiguration() {
+            return ActorCriticNetworkConfiguration.builder()
+                    .l2(l2)
+                    .listeners(Arrays.asList(listeners))
+                    .updater(updater)
+                    .build();
+
+        }
     }
 
 }

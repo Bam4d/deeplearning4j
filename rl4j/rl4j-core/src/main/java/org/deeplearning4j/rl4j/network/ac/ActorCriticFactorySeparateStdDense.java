@@ -16,6 +16,8 @@
 
 package org.deeplearning4j.rl4j.network.ac;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -27,12 +29,17 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+
 import org.deeplearning4j.rl4j.network.configuration.ActorCriticDenseNetworkConfiguration;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
+import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+
+import java.util.Arrays;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/9/16.
@@ -118,6 +125,32 @@ public class ActorCriticFactorySeparateStdDense implements ActorCriticFactorySep
 
 
         return new ActorCriticSeparate(model, model2);
+    }
+
+    @AllArgsConstructor
+    @Value
+    @Builder
+    @Deprecated
+    public static class Configuration {
+
+        int numLayer;
+        int numHiddenNodes;
+        double l2;
+        IUpdater updater;
+        TrainingListener[] listeners;
+        boolean useLSTM;
+
+        public ActorCriticDenseNetworkConfiguration toNetworkConfiguration() {
+            return ActorCriticDenseNetworkConfiguration.builder()
+                    .numHiddenNodes(numHiddenNodes)
+                    .numLayers(numLayer)
+                    .l2(l2)
+                    .listeners(Arrays.asList(listeners))
+                    .updater(updater)
+                    .useLSTM(useLSTM)
+                    .build();
+
+        }
     }
 
 

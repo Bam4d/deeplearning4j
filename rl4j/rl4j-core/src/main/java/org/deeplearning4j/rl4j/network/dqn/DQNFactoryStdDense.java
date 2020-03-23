@@ -16,6 +16,9 @@
 
 package org.deeplearning4j.rl4j.network.dqn;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Singular;
 import lombok.Value;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -24,12 +27,18 @@ import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.rl4j.network.configuration.DQNDenseNetworkConfiguration;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
+import org.nd4j.linalg.learning.config.IUpdater;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/13/16.
@@ -84,6 +93,32 @@ public class DQNFactoryStdDense implements DQNFactory {
             model.setListeners(new ScoreIterationListener(Constants.NEURAL_NET_ITERATION_LISTENER));
         }
         return new DQN(model);
+    }
+
+    @AllArgsConstructor
+    @Value
+    @Builder
+    @Deprecated
+    public static class Configuration {
+
+        int numLayer;
+        int numHiddenNodes;
+        double l2;
+        IUpdater updater;
+        TrainingListener[] listeners;
+
+        /**
+         * Converts the deprecated Configuration to the new NetworkConfiguration format
+         */
+        public DQNDenseNetworkConfiguration toNetworkConfiguration() {
+            return DQNDenseNetworkConfiguration.builder()
+                    .numHiddenNodes(numHiddenNodes)
+                    .numLayers(numLayer)
+                    .l2(l2)
+                    .listeners(Arrays.asList(listeners))
+                    .updater(updater)
+                    .build();
+        }
     }
 
 }
