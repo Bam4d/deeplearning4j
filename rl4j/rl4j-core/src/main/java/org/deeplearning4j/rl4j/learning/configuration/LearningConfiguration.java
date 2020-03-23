@@ -30,30 +30,30 @@ public class LearningConfiguration implements ILearningConfiguration {
      * Seed value used for training
      */
     @Builder.Default
-    protected Long seed = System.currentTimeMillis();
+    private Long seed = System.currentTimeMillis();
 
     /**
      * The maximum number of steps in each episode
      */
     @Builder.Default
-    protected int maxEpochStep = 200;
+    private int maxEpochStep = 200;
 
     /**
      * The maximum number of steps to train for
      */
     @Builder.Default
-    protected int maxStep = 150000;
+    private int maxStep = 150000;
 
     /**
      * Gamma parameter used for discounted rewards
      */
     @Builder.Default
-    protected double gamma = 0.99;
+    private double gamma = 0.99;
 
     /**
      * Scaling parameter for rewards
      */
     @Builder.Default
-    protected double rewardFactor = 1.0;
+    private double rewardFactor = 1.0;
 
 }

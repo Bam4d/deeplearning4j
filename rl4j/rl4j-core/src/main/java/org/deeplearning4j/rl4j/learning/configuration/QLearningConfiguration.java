@@ -32,48 +32,48 @@ public class QLearningConfiguration extends LearningConfiguration {
      * The maximum size of the experience replay buffer
      */
     @Builder.Default
-    protected int expRepMaxSize = 150000;
+    private int expRepMaxSize = 150000;
 
     /**
      * The batch size of experience for each training iteration
      */
     @Builder.Default
-    protected int batchSize = 32;
+    private int batchSize = 32;
 
     /**
      * How many steps between target network updates
      */
     @Builder.Default
-    protected int targetDqnUpdateFreq = 100;
+    private int targetDqnUpdateFreq = 100;
 
     /**
      * The number of steps to initially wait for until samplling batches from experience replay buffer
      */
     @Builder.Default
-    protected int updateStart = 10;
+    private int updateStart = 10;
 
     /**
      * Prevent the new Q-Value from being farther than <i>errorClamp</i> away from the previous value. Double.NaN will result in no clamping
      */
     @Builder.Default
-    protected double errorClamp = 1.0;
+    private double errorClamp = 1.0;
 
     /**
      * The minimum probability for random exploration action during episilon-greedy annealing
      */
     @Builder.Default
-    protected double minEpsilon = 0.1f;
+    private double minEpsilon = 0.1f;
 
     /**
      * The number of steps to anneal epsilon to its minimum value.
      */
     @Builder.Default
-    protected int epsilonNbStep = 10000;
+    private int epsilonNbStep = 10000;
 
     /**
      * Whether to use the double DQN algorithm
      */
     @Builder.Default
-    protected boolean doubleDQN = false;
+    private boolean doubleDQN = false;
 
 }

@@ -36,23 +36,23 @@ public class NetworkConfiguration {
      * The learning rate of the network
      */
     @Builder.Default
-    protected double learningRate = 0.01;
+    private double learningRate = 0.01;
 
     /**
      * L2 regularization on the network
      */
     @Builder.Default
-    protected double l2 = 0.0;
+    private double l2 = 0.0;
 
     /**
      * The network's gradient update algorithm
      */
-    protected IUpdater updater;
+    private IUpdater updater;
 
     /**
      * Training listeners attached to the network
      */
     @Singular
-    protected List<TrainingListener> listeners;
+    private List<TrainingListener> listeners;
 
 }
