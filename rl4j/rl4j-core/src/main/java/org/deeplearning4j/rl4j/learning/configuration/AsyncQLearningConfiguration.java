@@ -26,8 +26,15 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class AsyncQLearningConfiguration extends QLearningConfiguration implements IAsyncLearningConfiguration {
 
-    final int numThreads;
-    final int nStep;
+    /**
+     * The number of asynchronous threads to use to generate experience data
+     */
+    protected final int numThreads;
+
+    /**
+     * The number of steps in each training interations
+     */
+    protected final int nStep;
 
     public int getLearnerUpdateFrequency() {
         return getTargetDqnUpdateFreq();

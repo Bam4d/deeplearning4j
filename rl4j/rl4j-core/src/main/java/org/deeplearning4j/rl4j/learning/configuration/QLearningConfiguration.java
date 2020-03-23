@@ -28,28 +28,52 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = false)
 public class QLearningConfiguration extends LearningConfiguration {
 
+    /**
+     * The maximum size of the experience replay buffer
+     */
     @Builder.Default
-    int expRepMaxSize = 150000;
+    protected int expRepMaxSize = 150000;
 
+    /**
+     * The batch size of experience for each training iteration
+     */
     @Builder.Default
-    int batchSize = 32;
+    protected int batchSize = 32;
 
+    /**
+     * How many steps between target network updates
+     */
     @Builder.Default
-    int targetDqnUpdateFreq = 100;
+    protected int targetDqnUpdateFreq = 100;
 
+    /**
+     * The number of steps to initially wait for until samplling batches from experience replay buffer
+     */
     @Builder.Default
-    int updateStart = 10;
+    protected int updateStart = 10;
 
+    /**
+     * Prevent the new Q-Value from being farther than <i>errorClamp</i> away from the previous value. Double.NaN will result in no clamping
+     */
     @Builder.Default
-    double errorClamp = 1.0;
+    protected double errorClamp = 1.0;
 
+    /**
+     * The minimum probability for random exploration action during episilon-greedy annealing
+     */
     @Builder.Default
-    double minEpsilon = 0.1f;
+    protected double minEpsilon = 0.1f;
 
+    /**
+     * The number of steps to anneal epsilon to its minimum value.
+     */
     @Builder.Default
-    int epsilonNbStep = 10000;
+    protected int epsilonNbStep = 10000;
 
+    /**
+     * Whether to use the double DQN algorithm
+     */
     @Builder.Default
-    boolean doubleDQN = false;
+    protected boolean doubleDQN = false;
 
 }

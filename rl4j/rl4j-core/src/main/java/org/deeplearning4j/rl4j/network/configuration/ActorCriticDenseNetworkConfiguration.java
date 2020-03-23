@@ -16,6 +16,7 @@
 
 package org.deeplearning4j.rl4j.network.configuration;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
@@ -24,6 +25,21 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class ActorCriticDenseNetworkConfiguration extends ActorCriticNetworkConfiguration {
-    int numLayers;
-    int numHiddenNodes;
+
+    /**
+     * The number of layers in the dense network
+     */
+    @Builder.Default
+    protected int numLayers = 3;
+
+    /**
+     * The number of hidden neurons in each layer
+     */
+    @Builder.Default
+    protected int numHiddenNodes = 100;
+
+
+
+
+
 }

@@ -32,15 +32,27 @@ import java.util.List;
 @NoArgsConstructor
 public class NetworkConfiguration {
 
+    /**
+     * The learning rate of the network
+     */
     @Builder.Default
-    double learningRate = 0.01;
+    protected double learningRate = 0.01;
 
+    /**
+     * L2 regularization on the network
+     */
     @Builder.Default
-    double l2 = 0.0;
+    protected double l2 = 0.0;
 
-    IUpdater updater;
+    /**
+     * The network's gradient update algorithm
+     */
+    protected IUpdater updater;
 
+    /**
+     * Training listeners attached to the network
+     */
     @Singular
-    List<TrainingListener> listeners;
+    protected List<TrainingListener> listeners;
 
 }

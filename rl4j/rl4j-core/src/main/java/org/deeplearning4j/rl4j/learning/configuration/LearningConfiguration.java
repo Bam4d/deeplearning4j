@@ -26,19 +26,34 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class LearningConfiguration implements ILearningConfiguration {
 
+    /**
+     * Seed value used for training
+     */
     @Builder.Default
-    Long seed = System.currentTimeMillis();
+    protected Long seed = System.currentTimeMillis();
 
+    /**
+     * The maximum number of steps in each episode
+     */
     @Builder.Default
-    int maxEpochStep = 200;
+    protected int maxEpochStep = 200;
 
+    /**
+     * The maximum number of steps to train for
+     */
     @Builder.Default
-    int maxStep = 150000;
+    protected int maxStep = 150000;
 
+    /**
+     * Gamma parameter used for discounted rewards
+     */
     @Builder.Default
-    double gamma = 0.99;
+    protected double gamma = 0.99;
 
+    /**
+     * Scaling parameter for rewards
+     */
     @Builder.Default
-    double rewardFactor = 1.0;
+    protected double rewardFactor = 1.0;
 
 }
