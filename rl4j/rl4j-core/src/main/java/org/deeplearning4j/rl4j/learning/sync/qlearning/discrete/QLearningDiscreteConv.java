@@ -38,10 +38,18 @@ public class QLearningDiscreteConv<O extends Encodable> extends QLearningDiscret
 
     @Deprecated
     public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, HistoryProcessor.Configuration hpconf,
-                                 QLearningConfiguration conf, IDataManager dataManager) {
+                                 QLConfiguration conf, IDataManager dataManager) {
         this(mdp, dqn, hpconf, conf);
         addListener(new DataManagerTrainingListener(dataManager));
     }
+
+    @Deprecated
+    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, HistoryProcessor.Configuration hpconf,
+                                 QLConfiguration conf) {
+        super(mdp, dqn, conf.toLearningConfiguration(), conf.getEpsilonNbStep() * hpconf.getSkipFrame());
+        setHistoryProcessor(hpconf);
+    }
+
     public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, HistoryProcessor.Configuration hpconf,
                                  QLearningConfiguration conf) {
         super(mdp, dqn, conf, conf.getEpsilonNbStep() * hpconf.getSkipFrame());
@@ -50,19 +58,33 @@ public class QLearningDiscreteConv<O extends Encodable> extends QLearningDiscret
 
     @Deprecated
     public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
-                                 HistoryProcessor.Configuration hpconf, QLearningConfiguration conf, IDataManager dataManager) {
+                                 HistoryProcessor.Configuration hpconf, QLConfiguration conf, IDataManager dataManager) {
         this(mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf, dataManager);
     }
+
+    @Deprecated
+    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
+                                 HistoryProcessor.Configuration hpconf, QLConfiguration conf) {
+        this(mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf);
+    }
+
     public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
                                  HistoryProcessor.Configuration hpconf, QLearningConfiguration conf) {
         this(mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf);
     }
 
     @Deprecated
-    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, NetworkConfiguration netConf,
-                                 HistoryProcessor.Configuration hpconf, QLearningConfiguration conf, IDataManager dataManager) {
-        this(mdp, new DQNFactoryStdConv(netConf), hpconf, conf, dataManager);
+    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactoryStdConv.Configuration netConf,
+                                 HistoryProcessor.Configuration hpconf, QLConfiguration conf, IDataManager dataManager) {
+        this(mdp, new DQNFactoryStdConv(netConf.toNetworkConfiguration()), hpconf, conf, dataManager);
     }
+
+    @Deprecated
+    public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, DQNFactoryStdConv.Configuration netConf,
+                                 HistoryProcessor.Configuration hpconf, QLConfiguration conf) {
+        this(mdp, new DQNFactoryStdConv(netConf.toNetworkConfiguration()), hpconf, conf);
+    }
+
     public QLearningDiscreteConv(MDP<O, Integer, DiscreteSpace> mdp, NetworkConfiguration netConf,
                                  HistoryProcessor.Configuration hpconf, QLearningConfiguration conf) {
         this(mdp, new DQNFactoryStdConv(netConf), hpconf, conf);

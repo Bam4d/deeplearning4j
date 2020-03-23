@@ -1,20 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Skymind, Inc.
+ * Copyright (c) 2015-2020 Skymind, Inc.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0.
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *  License for the specific language governing permissions and limitations
+ *  under the License.
  *
- * SPDX-License-Identifier: Apache-2.0
+ *  SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package org.deeplearning4j.rl4j.learning.async.nstepq.discrete;
+package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
 
 import org.deeplearning4j.rl4j.learning.configuration.AsyncQLearningConfiguration;
 import org.deeplearning4j.rl4j.mdp.MDP;
@@ -34,9 +34,15 @@ public class AsyncNStepQLearningDiscreteDense<O extends Encodable> extends Async
 
     @Deprecated
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn,
-                                            AsyncQLearningConfiguration conf, IDataManager dataManager) {
-        super(mdp, dqn, conf);
+                                            AsyncNStepQLConfiguration conf, IDataManager dataManager) {
+        super(mdp, dqn, conf.toLearningConfiguration());
         addListener(new DataManagerTrainingListener(dataManager));
+    }
+
+    @Deprecated
+    public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn,
+                                            AsyncNStepQLConfiguration conf) {
+        super(mdp, dqn, conf.toLearningConfiguration());
     }
 
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn,
@@ -46,9 +52,15 @@ public class AsyncNStepQLearningDiscreteDense<O extends Encodable> extends Async
 
     @Deprecated
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
-                                            AsyncQLearningConfiguration conf, IDataManager dataManager) {
+                                            AsyncNStepQLConfiguration conf, IDataManager dataManager) {
         this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf,
                 dataManager);
+    }
+
+    @Deprecated
+    public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
+                                            AsyncNStepQLConfiguration conf) {
+        this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
     }
 
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
@@ -58,13 +70,20 @@ public class AsyncNStepQLearningDiscreteDense<O extends Encodable> extends Async
 
     @Deprecated
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,
-                                            DQNDenseNetworkConfiguration netConf, AsyncQLearningConfiguration conf, IDataManager dataManager) {
-        this(mdp, new DQNFactoryStdDense(netConf), conf, dataManager);
+                                            DQNFactoryStdDense.Configuration netConf, AsyncNStepQLConfiguration conf, IDataManager dataManager) {
+        this(mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf, dataManager);
+    }
+
+    @Deprecated
+    public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,
+                                            DQNFactoryStdDense.Configuration netConf, AsyncNStepQLConfiguration conf) {
+        this(mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf);
     }
 
     public AsyncNStepQLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,
                                             DQNDenseNetworkConfiguration netConf, AsyncQLearningConfiguration conf) {
         this(mdp, new DQNFactoryStdDense(netConf), conf);
     }
+
 
 }

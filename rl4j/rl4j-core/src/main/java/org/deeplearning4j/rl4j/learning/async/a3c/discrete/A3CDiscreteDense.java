@@ -36,10 +36,15 @@ import org.deeplearning4j.rl4j.util.IDataManager;
 public class A3CDiscreteDense<O extends Encodable> extends A3CDiscrete<O> {
 
     @Deprecated
-    public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic IActorCritic, A3CLearningConfiguration conf,
+    public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic IActorCritic, A3CConfiguration conf,
                             IDataManager dataManager) {
         this(mdp, IActorCritic, conf);
         addListener(new DataManagerTrainingListener(dataManager));
+    }
+
+    @Deprecated
+    public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic actorCritic, A3CConfiguration conf) {
+        super(mdp, actorCritic, conf.toLearningConfiguration());
     }
 
     public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IActorCritic actorCritic, A3CLearningConfiguration conf) {
@@ -48,9 +53,15 @@ public class A3CDiscreteDense<O extends Encodable> extends A3CDiscrete<O> {
 
     @Deprecated
     public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactorySeparate factory,
-                            A3CLearningConfiguration conf, IDataManager dataManager) {
+                            A3CConfiguration conf, IDataManager dataManager) {
         this(mdp, factory.buildActorCritic(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf,
                 dataManager);
+    }
+
+    @Deprecated
+    public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactorySeparate factory,
+                            A3CConfiguration conf) {
+        this(mdp, factory.buildActorCritic(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
     }
 
     public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactorySeparate factory,
@@ -60,9 +71,15 @@ public class A3CDiscreteDense<O extends Encodable> extends A3CDiscrete<O> {
 
     @Deprecated
     public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,
-                            ActorCriticDenseNetworkConfiguration netConf, A3CLearningConfiguration conf,
+                            ActorCriticFactorySeparateStdDense.Configuration netConf, A3CConfiguration conf,
                             IDataManager dataManager) {
-        this(mdp, new ActorCriticFactorySeparateStdDense(netConf), conf, dataManager);
+        this(mdp, new ActorCriticFactorySeparateStdDense(netConf.toNetworkConfiguration()), conf, dataManager);
+    }
+
+    @Deprecated
+    public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,
+                            ActorCriticFactorySeparateStdDense.Configuration netConf, A3CConfiguration conf) {
+        this(mdp, new ActorCriticFactorySeparateStdDense(netConf.toNetworkConfiguration()), conf);
     }
 
     public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp,
@@ -72,9 +89,15 @@ public class A3CDiscreteDense<O extends Encodable> extends A3CDiscrete<O> {
 
     @Deprecated
     public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactoryCompGraph factory,
-                            A3CLearningConfiguration conf, IDataManager dataManager) {
+                            A3CConfiguration conf, IDataManager dataManager) {
         this(mdp, factory.buildActorCritic(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf,
                 dataManager);
+    }
+
+    @Deprecated
+    public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactoryCompGraph factory,
+                            A3CConfiguration conf) {
+        this(mdp, factory.buildActorCritic(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
     }
 
     public A3CDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, ActorCriticFactoryCompGraph factory,

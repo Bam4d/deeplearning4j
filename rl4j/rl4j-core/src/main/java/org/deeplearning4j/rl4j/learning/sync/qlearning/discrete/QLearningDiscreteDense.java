@@ -17,6 +17,7 @@
 package org.deeplearning4j.rl4j.learning.sync.qlearning.discrete;
 
 import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
+import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.configuration.DQNDenseNetworkConfiguration;
 import org.deeplearning4j.rl4j.network.dqn.DQNFactory;
@@ -34,10 +35,15 @@ public class QLearningDiscreteDense<O extends Encodable> extends QLearningDiscre
 
 
     @Deprecated
-    public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf,
-                                  IDataManager dataManager) {
+    public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearning.QLConfiguration conf,
+                    IDataManager dataManager) {
         this(mdp, dqn, conf);
         addListener(new DataManagerTrainingListener(dataManager));
+    }
+
+    @Deprecated
+    public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearning.QLConfiguration conf) {
+        super(mdp, dqn, conf.toLearningConfiguration(), conf.getEpsilonNbStep());
     }
 
     public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf) {
@@ -46,9 +52,15 @@ public class QLearningDiscreteDense<O extends Encodable> extends QLearningDiscre
 
     @Deprecated
     public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
-                                  QLearningConfiguration conf, IDataManager dataManager) {
+                    QLearning.QLConfiguration conf, IDataManager dataManager) {
         this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf,
-                dataManager);
+                        dataManager);
+    }
+
+    @Deprecated
+    public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
+                                  QLearning.QLConfiguration conf) {
+        this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
     }
 
     public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactory factory,
@@ -57,9 +69,16 @@ public class QLearningDiscreteDense<O extends Encodable> extends QLearningDiscre
     }
 
     @Deprecated
-    public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNDenseNetworkConfiguration netConf,
-                                  QLearningConfiguration conf, IDataManager dataManager) {
-        this(mdp, new DQNFactoryStdDense(netConf), conf, dataManager);
+    public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactoryStdDense.Configuration netConf,
+                    QLearning.QLConfiguration conf, IDataManager dataManager) {
+
+        this(mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf, dataManager);
+    }
+
+    @Deprecated
+    public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNFactoryStdDense.Configuration netConf,
+                                  QLearning.QLConfiguration conf) {
+        this(mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf);
     }
 
     public QLearningDiscreteDense(MDP<O, Integer, DiscreteSpace> mdp, DQNDenseNetworkConfiguration netConf,

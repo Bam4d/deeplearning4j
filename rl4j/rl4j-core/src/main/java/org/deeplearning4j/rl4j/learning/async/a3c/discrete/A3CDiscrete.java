@@ -75,4 +75,37 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
         return iActorCritic;
     }
 
+    @Data
+    @AllArgsConstructor
+    @Builder
+    @EqualsAndHashCode(callSuper = false)
+    public static class A3CConfiguration {
+
+        int seed;
+        int maxEpochStep;
+        int maxStep;
+        int numThread;
+        int nstep;
+        int updateStart;
+        double rewardFactor;
+        double gamma;
+        double errorClamp;
+
+        /**
+         * Converts the deprecated A3CConfiguration to the new LearningConfiguration format
+         */
+        public A3CLearningConfiguration toLearningConfiguration() {
+            return A3CLearningConfiguration.builder()
+                    .seed(new Long(seed))
+                    .maxEpochStep(maxEpochStep)
+                    .maxStep(maxStep)
+                    .numThreads(numThread)
+                    .nStep(nstep)
+                    .rewardFactor(rewardFactor)
+                    .gamma(gamma)
+                    .build();
+
+        }
+
+    }
 }

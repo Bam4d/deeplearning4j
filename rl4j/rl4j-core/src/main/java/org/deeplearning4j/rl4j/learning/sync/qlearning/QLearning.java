@@ -16,15 +16,20 @@
 
 package org.deeplearning4j.rl4j.learning.sync.qlearning;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.EpochStepCounter;
+import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
 import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.ExpReplay;
 import org.deeplearning4j.rl4j.learning.sync.IExpReplay;
@@ -215,6 +220,53 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         double score;
         StepReply<O> stepReply;
 
+    }
+
+
+    @Data
+    @AllArgsConstructor
+    @Builder
+    @Deprecated
+    @EqualsAndHashCode(callSuper = false)
+    @JsonDeserialize(builder = QLConfiguration.QLConfigurationBuilder.class)
+    public static class QLConfiguration {
+
+        Integer seed;
+        int maxEpochStep;
+        int maxStep;
+        int expRepMaxSize;
+        int batchSize;
+        int targetDqnUpdateFreq;
+        int updateStart;
+        double rewardFactor;
+        double gamma;
+        double errorClamp;
+        float minEpsilon;
+        int epsilonNbStep;
+        boolean doubleDQN;
+
+        @JsonPOJOBuilder(withPrefix = "")
+        public static final class QLConfigurationBuilder {
+        }
+
+        public QLearningConfiguration toLearningConfiguration() {
+
+            return QLearningConfiguration.builder()
+                    .seed(seed.longValue())
+                    .maxEpochStep(maxEpochStep)
+                    .maxStep(maxStep)
+                    .expRepMaxSize(expRepMaxSize)
+                    .batchSize(batchSize)
+                    .targetDqnUpdateFreq(targetDqnUpdateFreq)
+                    .updateStart(updateStart)
+                    .rewardFactor(rewardFactor)
+                    .gamma(gamma)
+                    .errorClamp(errorClamp)
+                    .minEpsilon(minEpsilon)
+                    .epsilonNbStep(epsilonNbStep)
+                    .doubleDQN(doubleDQN)
+                    .build();
+        }
     }
 
 }
