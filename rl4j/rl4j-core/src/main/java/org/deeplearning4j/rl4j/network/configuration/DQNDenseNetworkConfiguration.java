@@ -26,9 +26,15 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class DQNDenseNetworkConfiguration extends NetworkConfiguration {
 
+    /**
+     * The number of layers in the dense network
+     */
     @Builder.Default
-    int numLayers = 3;
+    protected int numLayers = 3;
 
+    /**
+     * The number of hidden neurons in each layer
+     */
     @Builder.Default
-    int numHiddenNodes = 100;
+    protected int numHiddenNodes = 100;
 }

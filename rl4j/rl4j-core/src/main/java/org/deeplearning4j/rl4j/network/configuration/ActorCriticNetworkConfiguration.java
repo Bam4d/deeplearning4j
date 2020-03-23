@@ -28,7 +28,10 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class ActorCriticNetworkConfiguration extends NetworkConfiguration {
 
+    /**
+     * Whether or not to add an LSTM layer to the network.
+     */
     @Builder.Default
-    boolean useLSTM = false;
+    protected boolean useLSTM = false;
 
 }
