@@ -1,22 +1,21 @@
 package org.deeplearning4j.rl4j.support;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.Value;
-import org.deeplearning4j.rl4j.learning.async.AsyncConfiguration;
+import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 
-@AllArgsConstructor
 @Value
-public class MockAsyncConfiguration implements AsyncConfiguration {
+@AllArgsConstructor
+public class MockAsyncConfiguration implements IAsyncLearningConfiguration {
 
-    private Integer seed;
+    private Long seed;
     private int maxEpochStep;
     private int maxStep;
-    private int numThread;
-    private int nstep;
-    private int targetDqnUpdateFreq;
     private int updateStart;
     private double rewardFactor;
     private double gamma;
     private double errorClamp;
+    private int numThreads;
+    private int nStep;
+    private int learnerUpdateFrequency;
 }

@@ -46,7 +46,7 @@ public class EpsGreedy<O, A, AS extends ActionSpace<A>> extends Policy<O, A> {
     final private int updateStart;
     final private int epsilonNbStep;
     final private Random rnd;
-    final private float minEpsilon;
+    final private double minEpsilon;
     final private IEpochTrainer learning;
 
     public NeuralNet getNeuralNet() {
@@ -55,10 +55,10 @@ public class EpsGreedy<O, A, AS extends ActionSpace<A>> extends Policy<O, A> {
 
     public A nextAction(INDArray input) {
 
-        float ep = getEpsilon();
+        double ep = getEpsilon();
         if (learning.getStepCounter() % 500 == 1)
             log.info("EP: " + ep + " " + learning.getStepCounter());
-        if (rnd.nextFloat() > ep)
+        if (rnd.nextDouble() > ep)
             return policy.nextAction(input);
         else
             return mdp.getActionSpace().randomAction();
@@ -68,7 +68,7 @@ public class EpsGreedy<O, A, AS extends ActionSpace<A>> extends Policy<O, A> {
         return this.nextAction(observation.getData());
     }
 
-    public float getEpsilon() {
-        return Math.min(1f, Math.max(minEpsilon, 1f - (learning.getStepCounter() - updateStart) * 1f / epsilonNbStep));
+    public double getEpsilon() {
+        return Math.min(1.0, Math.max(minEpsilon, 1.0 - (learning.getStepCounter() - updateStart) * 1.0 / epsilonNbStep));
     }
 }

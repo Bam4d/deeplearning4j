@@ -22,17 +22,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.deeplearning4j.rl4j.learning.NeuralNetFetchable;
-import org.nd4j.linalg.primitives.Pair;
 import org.deeplearning4j.rl4j.learning.ILearning;
-import org.deeplearning4j.rl4j.learning.Learning;
+import org.deeplearning4j.rl4j.learning.NeuralNetFetchable;
+import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.deeplearning4j.rl4j.network.dqn.DQN;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
 import org.deeplearning4j.util.ModelSerializer;
+import org.nd4j.linalg.primitives.Pair;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -304,7 +317,7 @@ public class DataManager implements IDataManager {
     public static class Info {
         String trainingName;
         String mdpName;
-        ILearning.LConfiguration conf;
+        ILearningConfiguration conf;
         int stepCounter;
         long millisTime;
     }

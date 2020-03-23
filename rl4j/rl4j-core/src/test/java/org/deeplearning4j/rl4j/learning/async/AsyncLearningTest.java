@@ -1,9 +1,15 @@
 package org.deeplearning4j.rl4j.learning.async;
 
+import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
-import org.deeplearning4j.rl4j.support.*;
+import org.deeplearning4j.rl4j.support.MockAsyncConfiguration;
+import org.deeplearning4j.rl4j.support.MockAsyncGlobal;
+import org.deeplearning4j.rl4j.support.MockEncodable;
+import org.deeplearning4j.rl4j.support.MockNeuralNet;
+import org.deeplearning4j.rl4j.support.MockPolicy;
+import org.deeplearning4j.rl4j.support.MockTrainingListener;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -68,7 +74,7 @@ public class AsyncLearningTest {
 
 
     public static class TestContext {
-        MockAsyncConfiguration config = new MockAsyncConfiguration(1, 11, 0, 0, 0, 0,0, 0, 0, 0);
+        MockAsyncConfiguration config = new MockAsyncConfiguration(1L, 11, 0, 0, 0, 0,0, 0, 0, 0);
         public final MockAsyncGlobal asyncGlobal = new MockAsyncGlobal();
         public final MockPolicy policy = new MockPolicy();
         public final TestAsyncLearning sut = new TestAsyncLearning(config, asyncGlobal, policy);
@@ -82,11 +88,11 @@ public class AsyncLearningTest {
     }
 
     public static class TestAsyncLearning extends AsyncLearning<MockEncodable, Integer, DiscreteSpace, MockNeuralNet> {
-        private final AsyncConfiguration conf;
+        private final IAsyncLearningConfiguration conf;
         private final IAsyncGlobal asyncGlobal;
         private final IPolicy<MockEncodable, Integer> policy;
 
-        public TestAsyncLearning(AsyncConfiguration conf, IAsyncGlobal asyncGlobal, IPolicy<MockEncodable, Integer> policy) {
+        public TestAsyncLearning(IAsyncLearningConfiguration conf, IAsyncGlobal asyncGlobal, IPolicy<MockEncodable, Integer> policy) {
             this.conf = conf;
             this.asyncGlobal = asyncGlobal;
             this.policy = policy;
@@ -98,7 +104,7 @@ public class AsyncLearningTest {
         }
 
         @Override
-        public AsyncConfiguration getConfiguration() {
+        public IAsyncLearningConfiguration getConfiguration() {
             return conf;
         }
 

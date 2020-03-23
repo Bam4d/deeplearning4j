@@ -16,10 +16,10 @@
 
 package org.deeplearning4j.rl4j.learning;
 
+import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.ActionSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/19/16.
@@ -34,21 +34,12 @@ public interface ILearning<O, A, AS extends ActionSpace<A>> {
 
     int getStepCounter();
 
-    LConfiguration getConfiguration();
+    ILearningConfiguration getConfiguration();
 
     MDP<O, A, AS> getMdp();
 
     IHistoryProcessor getHistoryProcessor();
 
-    interface LConfiguration {
 
-        Integer getSeed();
-
-        int getMaxEpochStep();
-
-        int getMaxStep();
-
-        double getGamma();
-    }
 
 }

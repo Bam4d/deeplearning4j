@@ -106,6 +106,7 @@ namespace sd {
             void storeResult(Context &block, int outputNumber, NDArray& array);
             void storeResult(Context &block, int outputNumber, NDArray* array);
             sd::NDArray* getZ(Context& block, int inputId = 0);
+            sd::NDArray* getNullifiedZ(Context& block, int inputId = 0);
 
             /**
             *   This method pre-allocates NDArrays for Op output, in case they are not available at op execution time
@@ -132,7 +133,7 @@ namespace sd {
             // this method returns OpDescriptor, describing this Op instance
             OpDescriptor *getOpDescriptor();
 
-            Nd4jStatus validateDataTypes(Context& block);
+            virtual Nd4jStatus validateDataTypes(Context& block);
 
             /**
             *   This method should be available in each implemented Op, and should return Op output shape(s), for a given input shape(s)
