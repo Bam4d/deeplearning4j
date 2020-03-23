@@ -29,12 +29,12 @@ public class AsyncQLearningConfiguration extends QLearningConfiguration implemen
     /**
      * The number of asynchronous threads to use to generate experience data
      */
-    protected final int numThreads;
+    private final int numThreads;
 
     /**
      * The number of steps in each training interations
      */
-    protected final int nStep;
+    private final int nStep;
 
     public int getLearnerUpdateFrequency() {
         return getTargetDqnUpdateFreq();

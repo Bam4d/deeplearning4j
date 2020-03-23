@@ -30,11 +30,11 @@ public class DQNDenseNetworkConfiguration extends NetworkConfiguration {
      * The number of layers in the dense network
      */
     @Builder.Default
-    protected int numLayers = 3;
+    private int numLayers = 3;
 
     /**
      * The number of hidden neurons in each layer
      */
     @Builder.Default
-    protected int numHiddenNodes = 100;
+    private int numHiddenNodes = 100;
 }

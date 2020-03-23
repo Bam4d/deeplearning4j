@@ -28,17 +28,17 @@ public class A3CLearningConfiguration extends LearningConfiguration implements I
     /**
      * The number of asynchronous threads to use to generate gradients
      */
-    protected final int numThreads;
+    private final int numThreads;
 
     /**
      * The number of steps to calculate gradients over
      */
-    protected final int nStep;
+    private final int nStep;
 
     /**
      * The frequency of async training iterations to update the target network.
      *
      * If this is set to -1 then the target network is updated after every training iteration
      */
-    protected int learnerUpdateFrequency = -1;
+    private int learnerUpdateFrequency = -1;
 }

@@ -32,6 +32,6 @@ public class ActorCriticNetworkConfiguration extends NetworkConfiguration {
      * Whether or not to add an LSTM layer to the network.
      */
     @Builder.Default
-    protected boolean useLSTM = false;
+    private boolean useLSTM = false;
 
 }
