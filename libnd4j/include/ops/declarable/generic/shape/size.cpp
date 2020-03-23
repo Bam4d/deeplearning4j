@@ -19,35 +19,31 @@
 //
 
 #include <system/op_boilerplate.h>
-#if NOT_EXCLUDED(OP_ones_as)
+#if NOT_EXCLUDED(OP_size)
 
 #include <ops/declarable/CustomOperations.h>
 
 namespace sd {
     namespace ops {
-        CUSTOM_OP_IMPL(ones_as, 1, 1, false, 0, 0) {
+        CUSTOM_OP_IMPL(size, 1, 1, false, 0, 0) {
+            auto input = INPUT_VARIABLE(0);
             auto output = OUTPUT_VARIABLE(0);
 
-            output->assign(1);
+            REQUIRE_TRUE(output->isScalar(), 0, "Size output should be scalar");
+
+            output->p(0, input->lengthOf());
 
             return Status::OK();
         }
-
-        DECLARE_SHAPE_FN(ones_as) {
-            auto in = inputShape->at(0);
-            auto dtype = block.numD() ? D_ARG(0) : ArrayOptions::dataType(in);
-            auto shape = sd::ConstantShapeHelper::getInstance()->createShapeInfo(dtype, in);
-
-            nd4j_printf("numD: %i; dtype: %s\n", block.numD(), DataTypeUtils::asString(dtype).c_str());
-
-            return SHAPELIST(shape);
+        DECLARE_SHAPE_FN(size) {
+            return SHAPELIST(ConstantShapeHelper::getInstance()->scalarShapeInfo(sd::DataType::INT64));
         }
 
-        DECLARE_TYPES(ones_as) {
+        DECLARE_TYPES(size) {
             getOpDescriptor()
                     ->setAllowedInputTypes(sd::DataType::ANY)
-                    ->setAllowedOutputTypes(sd::DataType::ANY)
-                    ->setSameMode(false);
+                    ->setAllowedOutputTypes({ALL_INTS, ALL_FLOATS})
+                    ->allowOverride(true);
         }
     }
 }
