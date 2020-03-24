@@ -24,6 +24,11 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.bytedeco.opencv.global.opencv_imgproc.COLOR_BGR2GRAY;
+
 public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Observation, A, AS> {
 
     @Getter
@@ -117,7 +122,7 @@ public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Ob
             historyProcessor.record(rawObservation);
         }
 
-        int stepOfObservation = epochStepCounter.getCurrentEpochStep() + 1;
+        int stepOfObservation = steps++;
 
         Map<String, Object> channelsData = buildChannelsData(rawStepReply.getObservation());
         Observation observation =  transformProcess.transform(channelsData, stepOfObservation, rawStepReply.isDone());

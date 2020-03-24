@@ -45,7 +45,7 @@ import org.nd4j.linalg.factory.Nd4j;
  * @author Alexandre Boulanger
  */
 @Slf4j
-public abstract class AsyncThread<O, A, AS extends ActionSpace<A>, NN extends NeuralNet>
+public abstract class AsyncThread<OBSERVATION, ACTION, ACTION_SPACE extends ActionSpace<ACTION>, NN extends NeuralNet>
                 extends Thread implements IEpochTrainer {
 
     @Getter
@@ -87,21 +87,21 @@ public abstract class AsyncThread<O, A, AS extends ActionSpace<A>, NN extends Ne
     private IHistoryProcessor historyProcessor;
 
     private boolean isEpisodeStarted = false;
-    private final LegacyMDPWrapper<O, A, AS> mdp;
+    private final LegacyMDPWrapper<OBSERVATION, ACTION, ACTION_SPACE> mdp;
 
     private final TrainingListenerList listeners;
 
-    public AsyncThread(IAsyncGlobal<NN> asyncGlobal, MDP<O, A, AS> mdp, TrainingListenerList listeners, int threadNumber, int deviceNum) {
-        this.mdp = new LegacyMDPWrapper<O, A, AS>(mdp, null);
+    public AsyncThread(MDP<OBSERVATION, ACTION, ACTION_SPACE> mdp, TrainingListenerList listeners, int threadNumber, int deviceNum) {
+        this.mdp = new LegacyMDPWrapper<OBSERVATION, ACTION, ACTION_SPACE>(mdp, null);
         this.listeners = listeners;
         this.threadNumber = threadNumber;
         this.deviceNum = deviceNum;
     }
 
-    public MDP<O, A, AS> getMdp() {
+    public MDP<OBSERVATION, ACTION, ACTION_SPACE> getMdp() {
         return mdp.getWrappedMDP();
     }
-    protected LegacyMDPWrapper<O, A, AS> getLegacyMDPWrapper() {
+    protected LegacyMDPWrapper<OBSERVATION, ACTION, ACTION_SPACE> getLegacyMDPWrapper() {
         return mdp;
     }
 
@@ -180,8 +180,8 @@ public abstract class AsyncThread<O, A, AS extends ActionSpace<A>, NN extends Ne
     }
 
     private boolean handleTraining(RunContext context) {
-        int maxSteps = Math.min(getConf().getNstep(), getConf().getMaxEpochStep());
-        SubEpochReturn subEpochReturn = trainSubEpoch(context.obs, maxSteps);
+        int trainSteps = Math.min(getConf().getNstep(), getConf().getMaxEpochStep());
+        SubEpochReturn subEpochReturn = trainSubEpoch(context.obs, trainSteps);
 
         context.obs = subEpochReturn.getLastObs();
         context.rewards += subEpochReturn.getReward();
@@ -225,7 +225,7 @@ public abstract class AsyncThread<O, A, AS extends ActionSpace<A>, NN extends Ne
 
     protected abstract AsyncConfiguration getConf();
 
-    protected abstract IPolicy<O, A> getPolicy(NN net);
+    protected abstract IPolicy<OBSERVATION, ACTION> getPolicy(NN net);
 
     protected abstract SubEpochReturn trainSubEpoch(Observation obs, int nstep);
 
@@ -234,10 +234,10 @@ public abstract class AsyncThread<O, A, AS extends ActionSpace<A>, NN extends Ne
 
         double reward = 0;
 
-        LegacyMDPWrapper<O, A, AS> mdp = getLegacyMDPWrapper();
+        LegacyMDPWrapper<OBSERVATION, ACTION, ACTION_SPACE> mdp = getLegacyMDPWrapper();
         Observation observation = mdp.reset();
 
-        A action = mdp.getActionSpace().noOp(); //by convention should be the NO_OP
+        ACTION action = mdp.getActionSpace().noOp(); //by convention should be the NO_OP
         while (observation.isSkipped() && !mdp.isDone()) {
             StepReply<Observation> stepReply = mdp.step(action);
 

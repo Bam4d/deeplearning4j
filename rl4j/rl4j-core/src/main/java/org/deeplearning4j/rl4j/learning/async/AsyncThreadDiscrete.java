@@ -59,7 +59,7 @@ public abstract class AsyncThreadDiscrete<O, NN extends NeuralNet>
                                TrainingListenerList listeners,
                                int threadNumber,
                                int deviceNum) {
-        super(asyncGlobal, mdp, listeners, threadNumber, deviceNum);
+        super(mdp, listeners, threadNumber, deviceNum);
         synchronized (asyncGlobal) {
             current = (NN)asyncGlobal.getCurrent().clone();
         }

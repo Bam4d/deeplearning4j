@@ -31,20 +31,20 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
  * in a "functionnal manner" if step return a mdp
  *
  */
-public interface MDP<O, A, AS extends ActionSpace<A>> {
+public interface MDP<OBSERVATION, ACTION, ACTION_SPACE extends ActionSpace<ACTION>> {
 
-    ObservationSpace<O> getObservationSpace();
+    ObservationSpace<OBSERVATION> getObservationSpace();
 
-    AS getActionSpace();
+    ACTION_SPACE getActionSpace();
 
-    O reset();
+    OBSERVATION reset();
 
     void close();
 
-    StepReply<O> step(A action);
+    StepReply<OBSERVATION> step(ACTION action);
 
     boolean isDone();
 
-    MDP<O, A, AS> newInstance();
+    MDP<OBSERVATION, ACTION, ACTION_SPACE> newInstance();
 
 }
