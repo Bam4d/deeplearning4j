@@ -25,6 +25,7 @@ import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.space.ActionSpace;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.rng.Random;
 
@@ -40,7 +41,7 @@ import org.nd4j.linalg.api.rng.Random;
  */
 @AllArgsConstructor
 @Slf4j
-public class EpsGreedy<O, A, AS extends ActionSpace<A>> extends Policy<O, A> {
+public class EpsGreedy<O extends Encodable, A, AS extends ActionSpace<A>> extends Policy<O, A> {
 
     final private Policy<O, A> policy;
     final private MDP<O, A, AS> mdp;

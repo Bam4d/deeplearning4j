@@ -27,28 +27,26 @@ import org.nd4j.linalg.indexing.NDArrayIndex;
 
 import java.util.List;
 
-public class A3CUpdateAlgorithm implements UpdateAlgorithm<IActorCritic> {
+/**
+ * The Advantage Actor-Critic update algorithm can be used by A2C and A3C algorithms alike
+ */
+public class AdvantageActorCriticUpdateAlgorithm implements UpdateAlgorithm<IActorCritic> {
 
-    private final IAsyncGlobal asyncGlobal;
     private final int[] shape;
     private final int actionSpaceSize;
-    private final int targetDqnUpdateFreq;
     private final double gamma;
     private final boolean recurrent;
 
-    public A3CUpdateAlgorithm(IAsyncGlobal asyncGlobal,
-                              int[] shape,
-                              int actionSpaceSize,
-                              int targetDqnUpdateFreq,
-                              double gamma) {
+    public AdvantageActorCriticUpdateAlgorithm(boolean recurrent,
+                                               int[] shape,
+                                               int actionSpaceSize,
+                                               double gamma) {
 
-        this.asyncGlobal = asyncGlobal;
 
         //if recurrent then train as a time serie with a batch size of 1
-        recurrent = asyncGlobal.getCurrent().isRecurrent();
+        this.recurrent = recurrent;
         this.shape = shape;
         this.actionSpaceSize = actionSpaceSize;
-        this.targetDqnUpdateFreq = targetDqnUpdateFreq;
         this.gamma = gamma;
     }
 
@@ -70,12 +68,7 @@ public class A3CUpdateAlgorithm implements UpdateAlgorithm<IActorCritic> {
             value = 0;
         }
         else {
-            INDArray[] output = null;
-            if (targetDqnUpdateFreq == -1)
-                output = current.outputAll(stateActionPair.getObservation().getData());
-            else synchronized (asyncGlobal) {
-                output = asyncGlobal.getTarget().outputAll(stateActionPair.getObservation().getData());
-            }
+            INDArray[] output = current.outputAll(stateActionPair.getObservation().getData());
             value = output[0].getDouble(0);
         }
 

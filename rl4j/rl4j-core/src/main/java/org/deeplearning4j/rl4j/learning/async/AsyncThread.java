@@ -32,6 +32,7 @@ import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.ActionSpace;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.util.IDataManager;
 import org.deeplearning4j.rl4j.util.LegacyMDPWrapper;
 import org.nd4j.linalg.factory.Nd4j;
@@ -47,7 +48,7 @@ import org.nd4j.linalg.factory.Nd4j;
  * @author Alexandre Boulanger
  */
 @Slf4j
-public abstract class AsyncThread<OBSERVATION, ACTION, ACTION_SPACE extends ActionSpace<ACTION>, NN extends NeuralNet>
+public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_SPACE extends ActionSpace<ACTION>, NN extends NeuralNet>
                 extends Thread implements IEpochTrainer {
 
     @Getter
@@ -116,13 +117,13 @@ public abstract class AsyncThread<OBSERVATION, ACTION, ACTION_SPACE extends Acti
         mdp.setHistoryProcessor(historyProcessor);
     }
 
-    protected void postEpoch() {
+    protected void postEpisode() {
         if (getHistoryProcessor() != null)
             getHistoryProcessor().stopMonitor();
 
     }
 
-    protected void preEpoch() {
+    protected void preEpisode() {
         // Do nothing
     }
 
@@ -149,36 +150,41 @@ public abstract class AsyncThread<OBSERVATION, ACTION, ACTION_SPACE extends Acti
      */
     @Override
     public void run() {
-        try {
-            RunContext context = new RunContext();
-            Nd4j.getAffinityManager().unsafeSetDevice(deviceNum);
+        RunContext context = new RunContext();
+        Nd4j.getAffinityManager().unsafeSetDevice(deviceNum);
 
-            log.info("ThreadNum-" + threadNumber + " Started!");
+        log.info("ThreadNum-" + threadNumber + " Started!");
 
-            while (!getAsyncGlobal().isTrainingComplete()) {
+        while (!getAsyncGlobal().isTrainingComplete()) {
 
-                if (episodeComplete) {
-                    boolean canContinue = startNewEpoch(context);
-                    if (!canContinue) {
-                        break;
-                    }
-                }
+            if (episodeComplete) {
+                startEpisode(context);
+            }
 
-                episodeComplete = handleTraining(context);
+            if(!startEpoch(context)) {
+                break;
+            }
 
-                if(episodeComplete) {
-                    boolean canContinue = finishEpisode(context);
-                    if (!canContinue) {
-                        break;
-                    }
-                }
+            episodeComplete = handleTraining(context);
 
-                epochCount++;
+            if(!finishEpoch(context)) {
+                break;
+            }
+
+            if(episodeComplete) {
+                finishEpisode(context);
             }
         }
-        finally {
-            terminateWork();
-        }
+    }
+
+    private boolean finishEpoch(RunContext context) {
+        epochCount++;
+        IDataManager.StatEntry statEntry = new AsyncStatEntry(stepCount, epochCount, context.rewards, currentEpisodeStepCount, context.score);
+        return listeners.notifyEpochTrainingResult(this, statEntry);
+    }
+
+    private boolean startEpoch(RunContext context) {
+        return listeners.notifyNewEpoch(this);
     }
 
     private boolean handleTraining(RunContext context) {
@@ -192,33 +198,21 @@ public abstract class AsyncThread<OBSERVATION, ACTION, ACTION_SPACE extends Acti
         return subEpochReturn.isEpisodeComplete();
     }
 
-    private boolean startNewEpoch(RunContext context) {
+    private void startEpisode(RunContext context) {
         getCurrent().reset();
         Learning.InitMdp<Observation>  initMdp = refacInitMdp();
 
         context.obs = initMdp.getLastObs();
         context.rewards = initMdp.getReward();
 
-        preEpoch();
-
-        return listeners.notifyNewEpoch(this);
-    }
-
-    private boolean finishEpisode(RunContext context) {
-        postEpoch();
-        IDataManager.StatEntry statEntry = new AsyncStatEntry(stepCount, epochCount, context.rewards, currentEpisodeStepCount, context.score);
-
-        log.info("ThreadNum-{} Episode steps: {}, reward: {}", threadNumber, currentEpisodeStepCount, context.rewards);
-
+        preEpisode();
         episodeCount++;
-
-        return listeners.notifyEpochTrainingResult(this, statEntry);
     }
 
-    private void terminateWork() {
-        if(episodeComplete) {
-            postEpoch();
-        }
+    private void finishEpisode(RunContext context) {
+        postEpisode();
+
+        log.info("ThreadNum-{} Episode step: {}, Episode: {}, Epoch: {}, reward: {}", threadNumber, currentEpisodeStepCount, episodeCount, epochCount, context.rewards);
     }
 
     protected abstract NN getCurrent();
@@ -246,16 +240,16 @@ public abstract class AsyncThread<OBSERVATION, ACTION, ACTION_SPACE extends Acti
             reward += stepReply.getReward();
             observation = stepReply.getObservation();
 
-            incrementStep();
+            incrementSteps(1);
         }
 
         return new Learning.InitMdp(0, observation, reward);
 
     }
 
-    public void incrementStep() {
-        stepCount++;
-        currentEpisodeStepCount++;
+    public void incrementSteps(int steps) {
+        stepCount += steps;
+        currentEpisodeStepCount += steps;
     }
 
     @AllArgsConstructor

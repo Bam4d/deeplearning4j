@@ -38,7 +38,7 @@ import org.nd4j.linalg.factory.Nd4j;
  *
  */
 @Slf4j
-public abstract class Learning<O, A, AS extends ActionSpace<A>, NN extends NeuralNet>
+public abstract class Learning<O extends Encodable, A, AS extends ActionSpace<A>, NN extends NeuralNet>
                 implements ILearning<O, A, AS>, NeuralNetFetchable<NN> {
 
     @Getter @Setter

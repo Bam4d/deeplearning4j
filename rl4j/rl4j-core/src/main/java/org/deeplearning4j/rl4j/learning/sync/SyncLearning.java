@@ -25,6 +25,7 @@ import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.learning.listener.*;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.space.ActionSpace;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.util.IDataManager;
 
 /**
@@ -35,8 +36,8 @@ import org.deeplearning4j.rl4j.util.IDataManager;
  * @author Alexandre Boulanger
  */
 @Slf4j
-public abstract class SyncLearning<O, A, AS extends ActionSpace<A>, NN extends NeuralNet>
-        extends Learning<O, A, AS, NN> implements IEpochTrainer {
+public abstract class SyncLearning<OBSERVATION extends Encodable, ACTION, ACTION_SPACE extends ActionSpace<ACTION>, NN extends NeuralNet>
+        extends Learning<OBSERVATION, ACTION, ACTION_SPACE, NN> implements IEpochTrainer {
 
     private final TrainingListenerList listeners = new TrainingListenerList();
 
