@@ -29,10 +29,10 @@ import java.util.Map;
 
 import static org.bytedeco.opencv.global.opencv_imgproc.COLOR_BGR2GRAY;
 
-public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Observation, A, AS> {
+public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends ActionSpace<A>> implements MDP<Observation, A, AS> {
 
     @Getter
-    private final MDP<O, A, AS> wrappedMDP;
+    private final MDP<OBSERVATION, A, AS> wrappedMDP;
     @Getter
     private final WrapperObservationSpace observationSpace;
     private final int[] shape;
@@ -46,7 +46,7 @@ public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Ob
     private int skipFrame = 1;
     private int steps = 0;
 
-    public LegacyMDPWrapper(MDP<O, A, AS> wrappedMDP, IHistoryProcessor historyProcessor) {
+    public LegacyMDPWrapper(MDP<OBSERVATION, A, AS> wrappedMDP, IHistoryProcessor historyProcessor) {
         this.wrappedMDP = wrappedMDP;
         this.shape = wrappedMDP.getObservationSpace().getShape();
         this.observationSpace = new WrapperObservationSpace(shape);
@@ -100,7 +100,7 @@ public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Ob
     public Observation reset() {
         transformProcess.reset();
 
-        O rawResetResponse = wrappedMDP.reset();
+        OBSERVATION rawResetResponse = wrappedMDP.reset();
         record(rawResetResponse);
 
         if(historyProcessor != null) {
@@ -115,7 +115,7 @@ public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Ob
     public StepReply<Observation> step(A a) {
         IHistoryProcessor historyProcessor = getHistoryProcessor();
 
-        StepReply<O> rawStepReply = wrappedMDP.step(a);
+        StepReply<OBSERVATION> rawStepReply = wrappedMDP.step(a);
         INDArray rawObservation = getInput(rawStepReply.getObservation());
 
         if(historyProcessor != null) {
@@ -129,7 +129,7 @@ public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Ob
         return new StepReply<Observation>(observation, rawStepReply.getReward(), rawStepReply.isDone(), rawStepReply.getInfo());
     }
 
-    private void record(O obs) {
+    private void record(OBSERVATION obs) {
         INDArray rawObservation = getInput(obs);
 
         IHistoryProcessor historyProcessor = getHistoryProcessor();
@@ -138,7 +138,7 @@ public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Ob
         }
     }
 
-    private Map<String, Object> buildChannelsData(final O obs) {
+    private Map<String, Object> buildChannelsData(final OBSERVATION obs) {
         return new HashMap<String, Object>() {{
             put("data", obs);
         }};
@@ -156,11 +156,11 @@ public class LegacyMDPWrapper<O, A, AS extends ActionSpace<A>> implements MDP<Ob
 
     @Override
     public MDP<Observation, A, AS> newInstance() {
-        return new LegacyMDPWrapper<O, A, AS>(wrappedMDP.newInstance(), historyProcessor);
+        return new LegacyMDPWrapper<>(wrappedMDP.newInstance(), historyProcessor);
     }
 
-    private INDArray getInput(O obs) {
-        INDArray arr = Nd4j.create(((Encodable)obs).toArray());
+    private INDArray getInput(OBSERVATION obs) {
+        INDArray arr = Nd4j.create(obs.toArray());
         int[] shape = observationSpace.getShape();
         if (shape.length == 1)
             return arr.reshape(new long[] {1, arr.length()});

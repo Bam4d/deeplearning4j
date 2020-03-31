@@ -31,6 +31,7 @@ import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.util.List;
@@ -41,7 +42,7 @@ import java.util.List;
  * Async Learning specialized for the Discrete Domain
  *
  */
-public abstract class AsyncThreadDiscrete<O, NN extends NeuralNet>
+public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends NeuralNet>
                 extends AsyncThread<O, Integer, DiscreteSpace, NN> {
 
     @Getter
@@ -75,7 +76,7 @@ public abstract class AsyncThreadDiscrete<O, NN extends NeuralNet>
     }
 
     @Override
-    protected void preEpoch() {
+    protected void preEpisode() {
         experienceHandler.reset();
     }
 
@@ -120,7 +121,6 @@ public abstract class AsyncThreadDiscrete<O, NN extends NeuralNet>
             obs = stepReply.getObservation();
             reward += stepReply.getReward();
 
-            incrementStep();
         }
 
         boolean episodeComplete = getMdp().isDone();
@@ -134,6 +134,8 @@ public abstract class AsyncThreadDiscrete<O, NN extends NeuralNet>
         getAsyncGlobal().applyGradient(updateAlgorithm.computeGradients(current, experienceHandler.getExperience()), experienceSize);
 
         experienceHandler.reset();
+
+        incrementSteps(experienceSize);
 
         return new SubEpochReturn(experienceSize, obs, reward, current.getLatestScore(), episodeComplete);
     }

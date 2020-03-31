@@ -1,11 +1,14 @@
 package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
 
 import org.deeplearning4j.rl4j.experience.StateActionPair;
+import org.deeplearning4j.rl4j.learning.async.AsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.UpdateAlgorithm;
 import org.deeplearning4j.rl4j.observation.Observation;
-import org.deeplearning4j.rl4j.support.MockAsyncGlobal;
 import org.deeplearning4j.rl4j.support.MockDQN;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -14,14 +17,17 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class QLearningUpdateAlgorithmTest {
+
+    @Mock
+    AsyncGlobal mockAsyncGlobal;
 
     @Test
     public void when_isTerminal_expect_initRewardIs0() {
         // Arrange
         MockDQN dqnMock = new MockDQN();
-        MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(dqnMock);
-        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(asyncGlobalMock, new int[] { 1 }, 1, -1, 1.0);
+        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(mockAsyncGlobal, new int[] { 1 }, 1, -1, 1.0);
         final Observation observation = new Observation(Nd4j.zeros(1));
         List<StateActionPair<Integer>> experience = new ArrayList<StateActionPair<Integer>>() {
             {
@@ -39,9 +45,7 @@ public class QLearningUpdateAlgorithmTest {
     @Test
     public void when_terminalAndNoTargetUpdate_expect_initRewardWithMaxQFromCurrent() {
         // Arrange
-        MockDQN globalDQNMock = new MockDQN();
-        MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(globalDQNMock);
-        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(asyncGlobalMock, new int[] { 2 }, 2, -1, 1.0);
+        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(mockAsyncGlobal, new int[] { 2 }, 2, -1, 1.0);
         final Observation observation = new Observation(Nd4j.create(new double[] { -123.0, -234.0 }));
         List<StateActionPair<Integer>> experience = new ArrayList<StateActionPair<Integer>>() {
             {
@@ -63,8 +67,7 @@ public class QLearningUpdateAlgorithmTest {
     public void when_terminalWithTargetUpdate_expect_initRewardWithMaxQFromGlobal() {
         // Arrange
         MockDQN globalDQNMock = new MockDQN();
-        MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(globalDQNMock);
-        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(asyncGlobalMock, new int[] { 2 }, 2, 1, 1.0);
+        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(mockAsyncGlobal, new int[] { 2 }, 2, 1, 1.0);
         final Observation observation = new Observation(Nd4j.create(new double[] { -123.0, -234.0 }));
         List<StateActionPair<Integer>> experience = new ArrayList<StateActionPair<Integer>>() {
             {
@@ -86,9 +89,7 @@ public class QLearningUpdateAlgorithmTest {
     public void when_callingWithMultipleExperiences_expect_gradientsAreValid() {
         // Arrange
         double gamma = 0.9;
-        MockDQN globalDQNMock = new MockDQN();
-        MockAsyncGlobal asyncGlobalMock = new MockAsyncGlobal(globalDQNMock);
-        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(asyncGlobalMock, new int[] { 2 }, 2, 1, gamma);
+        UpdateAlgorithm sut = new QLearningUpdateAlgorithm(mockAsyncGlobal, new int[] { 2 }, 2, 1, gamma);
         List<StateActionPair<Integer>> experience = new ArrayList<StateActionPair<Integer>>() {
             {
                 add(new StateActionPair<Integer>(new Observation(Nd4j.create(new double[] { -1.1, -1.2 })), 0, 1.0, false));

@@ -63,11 +63,7 @@ public class QLearningUpdateAlgorithm implements UpdateAlgorithm<IDQN> {
         }
         else {
             INDArray[] output = null;
-            if (targetDqnUpdateFreq == -1)
-                output = current.outputAll(stateActionPair.getObservation().getData());
-            else synchronized (asyncGlobal) {
-                output = asyncGlobal.getTarget().outputAll(stateActionPair.getObservation().getData());
-            }
+            output = current.outputAll(stateActionPair.getObservation().getData());
             r = Nd4j.max(output[0]).getDouble(0);
         }
 

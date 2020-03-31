@@ -24,6 +24,7 @@ import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.space.ActionSpace;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.util.LegacyMDPWrapper;
 
 /**
@@ -33,7 +34,7 @@ import org.deeplearning4j.rl4j.util.LegacyMDPWrapper;
  *
  * A Policy responsability is to choose the next action given a state
  */
-public abstract class Policy<O, A> implements IPolicy<O, A> {
+public abstract class Policy<O extends Encodable, A> implements IPolicy<O, A> {
 
     public abstract NeuralNet getNeuralNet();
 

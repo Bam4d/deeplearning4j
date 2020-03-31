@@ -36,8 +36,8 @@ import org.nd4j.linalg.factory.Nd4j;
  * @author Alexandre Boulanger
  */
 @Slf4j
-public abstract class AsyncLearning<O extends Encodable, A, AS extends ActionSpace<A>, NN extends NeuralNet>
-                extends Learning<O, A, AS, NN>
+public abstract class AsyncLearning<OBSERVATION extends Encodable, ACTION, ACTION_SPACE extends ActionSpace<ACTION>, NN extends NeuralNet>
+                extends Learning<OBSERVATION, ACTION, ACTION_SPACE, NN>
                 implements IAsyncLearning {
 
     private Thread monitorThread = null;
