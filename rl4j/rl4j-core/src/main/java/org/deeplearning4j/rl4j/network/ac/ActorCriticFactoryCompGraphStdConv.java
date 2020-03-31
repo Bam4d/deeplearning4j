@@ -32,6 +32,7 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.rl4j.network.configuration.ActorCriticNetworkConfiguration;
+import org.deeplearning4j.rl4j.network.configuration.ActorCriticNetworkConfiguration.ActorCriticNetworkConfigurationBuilder;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
@@ -126,11 +127,16 @@ public class ActorCriticFactoryCompGraphStdConv implements ActorCriticFactoryCom
          * Converts the deprecated Configuration to the new NetworkConfiguration format
          */
         public ActorCriticNetworkConfiguration toNetworkConfiguration() {
-            return ActorCriticNetworkConfiguration.builder()
+            ActorCriticNetworkConfigurationBuilder builder = ActorCriticNetworkConfiguration.builder()
                     .l2(l2)
-                    .listeners(Arrays.asList(listeners))
                     .updater(updater)
-                    .build();
+                    .useLSTM(useLSTM);
+
+            if (listeners != null) {
+                builder.listeners(Arrays.asList(listeners));
+            }
+
+            return builder.build();
 
         }
     }

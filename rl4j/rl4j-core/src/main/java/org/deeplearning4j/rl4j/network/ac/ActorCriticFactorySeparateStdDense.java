@@ -33,6 +33,7 @@ import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 
 import org.deeplearning4j.rl4j.network.configuration.ActorCriticDenseNetworkConfiguration;
+import org.deeplearning4j.rl4j.network.configuration.ActorCriticDenseNetworkConfiguration.ActorCriticDenseNetworkConfigurationBuilder;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
@@ -141,14 +142,18 @@ public class ActorCriticFactorySeparateStdDense implements ActorCriticFactorySep
         boolean useLSTM;
 
         public ActorCriticDenseNetworkConfiguration toNetworkConfiguration() {
-            return ActorCriticDenseNetworkConfiguration.builder()
+            ActorCriticDenseNetworkConfigurationBuilder builder = ActorCriticDenseNetworkConfiguration.builder()
                     .numHiddenNodes(numHiddenNodes)
                     .numLayers(numLayer)
                     .l2(l2)
-                    .listeners(Arrays.asList(listeners))
                     .updater(updater)
-                    .useLSTM(useLSTM)
-                    .build();
+                    .useLSTM(useLSTM);
+
+            if (listeners != null) {
+                builder.listeners(Arrays.asList(listeners));
+            }
+
+            return builder.build();
 
         }
     }

@@ -30,6 +30,7 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.api.TrainingListener;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.rl4j.network.configuration.DQNDenseNetworkConfiguration;
+import org.deeplearning4j.rl4j.network.configuration.DQNDenseNetworkConfiguration.DQNDenseNetworkConfigurationBuilder;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
@@ -111,13 +112,17 @@ public class DQNFactoryStdDense implements DQNFactory {
          * Converts the deprecated Configuration to the new NetworkConfiguration format
          */
         public DQNDenseNetworkConfiguration toNetworkConfiguration() {
-            return DQNDenseNetworkConfiguration.builder()
+            DQNDenseNetworkConfigurationBuilder builder = DQNDenseNetworkConfiguration.builder()
                     .numHiddenNodes(numHiddenNodes)
                     .numLayers(numLayer)
                     .l2(l2)
-                    .listeners(Arrays.asList(listeners))
-                    .updater(updater)
-                    .build();
+                    .updater(updater);
+
+            if (listeners != null) {
+                builder.listeners(Arrays.asList(listeners));
+            }
+
+            return builder.build();
         }
     }
 

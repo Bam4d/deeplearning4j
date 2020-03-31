@@ -97,11 +97,16 @@ public class DQNFactoryStdConv implements DQNFactory {
          * Converts the deprecated Configuration to the new NetworkConfiguration format
          */
         public NetworkConfiguration toNetworkConfiguration() {
-            return NetworkConfiguration.builder()
+            NetworkConfiguration.NetworkConfigurationBuilder builder = NetworkConfiguration.builder()
+                    .learningRate(learningRate)
                     .l2(l2)
-                    .listeners(Arrays.asList(listeners))
-                    .updater(updater)
-                    .build();
+                    .updater(updater);
+
+            if (listeners != null) {
+                builder.listeners(Arrays.asList(listeners));
+            }
+
+            return builder.build();
 
         }
     }
