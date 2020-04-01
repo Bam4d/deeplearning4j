@@ -52,6 +52,9 @@ public class TrainingListenerListTest {
         trainingListenerList.add(listener2);
 
         when(listener1.onTrainingStart()).thenReturn(TrainingListener.ListenerResponse.STOP);
+        when(listener1.onNewEpoch(eq(mockTrainer))).thenReturn(TrainingListener.ListenerResponse.STOP);
+        when(listener1.onEpochTrainingResult(eq(mockTrainer), eq(mockStatEntry))).thenReturn(TrainingListener.ListenerResponse.STOP);
+        when(listener1.onTrainingProgress(eq(mockLearning))).thenReturn(TrainingListener.ListenerResponse.STOP);
 
         // Act
         trainingListenerList.notifyTrainingStarted();

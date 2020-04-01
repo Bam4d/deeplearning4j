@@ -169,7 +169,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
             }
         }
 
-        return new QLStepReturn<Observation>(maxQ, getQNetwork().getLatestScore(), stepReply);
+        return new QLStepReturn<>(maxQ, getQNetwork().getLatestScore(), stepReply);
     }
 
     protected DataSet setTarget(List<Transition<Integer>> transitions) {

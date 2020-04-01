@@ -105,7 +105,7 @@ public class AsyncThreadTest {
 
         // Some conditions of this test harness
         Preconditions.checkArgument(episodeLength >= nstep, "episodeLength must be greater than or equal to nstep");
-        Preconditions.checkArgument(episodeLength % nstep  == 0, "episodeLength must be a multiple of nstep");
+        Preconditions.checkArgument(episodeLength % nstep == 0, "episodeLength must be a multiple of nstep");
 
         Observation mockObs = new Observation(Nd4j.zeros(observationShape));
 
@@ -117,7 +117,8 @@ public class AsyncThreadTest {
         when(mockAsyncGlobal.isTrainingComplete()).thenAnswer(invocation -> thread.getStepCount() >= maxSteps);
 
         when(thread.trainSubEpoch(any(Observation.class), anyInt())).thenAnswer((invocationOnMock) -> {
-            thread.incrementSteps(nstep);
+            thread.stepCount += nstep;
+            thread.currentEpisodeStepCount += nstep;
             boolean isEpisodeComplete = thread.getStepCount() % episodeLength == 0;
             return new AsyncThread.SubEpochReturn(nstep, mockObs, 0.0, 0.0, isEpisodeComplete);
         });
@@ -127,7 +128,7 @@ public class AsyncThreadTest {
     public void when_episodeComplete_expect_neuralNetworkReset() {
 
         // Arrange
-        mockTrainingContext(100, 10,10);
+        mockTrainingContext(100, 10, 10);
         mockTrainingListeners();
 
         // Act

@@ -1,5 +1,6 @@
 package org.deeplearning4j.rl4j.learning.sync;
 
+import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListener;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import org.deeplearning4j.rl4j.learning.sync.support.MockStatEntry;
@@ -30,21 +31,26 @@ public class SyncLearningTest {
 
     SyncLearning<Box, INDArray, ActionSpace<INDArray>, NeuralNet> syncLearning;
 
+    @Mock
+    ILearning.LConfiguration mockLearningConfiguration;
+
     @Before
     public void setup() {
 
-        QLearning.QLConfiguration lconfig = QLearning.QLConfiguration.builder().maxStep(10).build();
         syncLearning = mock(SyncLearning.class, Mockito.withSettings()
-                .useConstructor(lconfig)
+                .useConstructor()
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
         syncLearning.addListener(mockTrainingListener);
 
         when(syncLearning.trainEpoch()).thenAnswer(invocation -> {
-            syncLearning.incrementEpoch();
+            //syncLearning.incrementEpoch();
             syncLearning.incrementStep();
             return new MockStatEntry(syncLearning.getEpochCount(), syncLearning.getStepCount(), 1.0);
         });
+
+        when(syncLearning.getConfiguration()).thenReturn(mockLearningConfiguration);
+        when(mockLearningConfiguration.getMaxStep()).thenReturn(100);
     }
 
     @Test
@@ -54,8 +60,8 @@ public class SyncLearningTest {
         syncLearning.train();
 
         verify(mockTrainingListener, times(1)).onTrainingStart();
-        verify(mockTrainingListener, times(10)).onNewEpoch(eq(syncLearning));
-        verify(mockTrainingListener, times(10)).onEpochTrainingResult(eq(syncLearning), any(IDataManager.StatEntry.class));
+        verify(mockTrainingListener, times(100)).onNewEpoch(eq(syncLearning));
+        verify(mockTrainingListener, times(100)).onEpochTrainingResult(eq(syncLearning), any(IDataManager.StatEntry.class));
         verify(mockTrainingListener, times(1)).onTrainingEnd();
 
     }

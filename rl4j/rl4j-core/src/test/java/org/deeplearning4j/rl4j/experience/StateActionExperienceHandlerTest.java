@@ -48,20 +48,4 @@ public class StateActionExperienceHandlerTest {
         assertEquals(3, (int)result.get(2).getAction());
     }
 
-    @Test
-    public void when_gettingExperience_expect_experienceStoreIsCleared() {
-        // Arrange
-        StateActionExperienceHandler sut = new StateActionExperienceHandler();
-        sut.reset();
-        sut.addExperience(null, 1, 1.0, false);
-
-        // Act
-        List<StateActionPair<Integer>> firstResult = sut.getExperience();
-        List<StateActionPair<Integer>> secondResult = sut.getExperience();
-
-        // Assert
-        assertEquals(1, firstResult.size());
-        assertEquals(0, secondResult.size());
-    }
-
 }

@@ -28,22 +28,16 @@ import java.util.List;
 
 public class QLearningUpdateAlgorithm implements UpdateAlgorithm<IDQN> {
 
-    private final IAsyncGlobal asyncGlobal;
     private final int[] shape;
     private final int actionSpaceSize;
-    private final int targetDqnUpdateFreq;
     private final double gamma;
 
-    public QLearningUpdateAlgorithm(IAsyncGlobal asyncGlobal,
-                                    int[] shape,
+    public QLearningUpdateAlgorithm(int[] shape,
                                     int actionSpaceSize,
-                                    int targetDqnUpdateFreq,
                                     double gamma) {
 
-        this.asyncGlobal = asyncGlobal;
         this.shape = shape;
         this.actionSpaceSize = actionSpaceSize;
-        this.targetDqnUpdateFreq = targetDqnUpdateFreq;
         this.gamma = gamma;
     }
 
@@ -58,10 +52,9 @@ public class QLearningUpdateAlgorithm implements UpdateAlgorithm<IDQN> {
         StateActionPair<Integer> stateActionPair = experience.get(size - 1);
 
         double r;
-        if(stateActionPair.isTerminal()) {
+        if (stateActionPair.isTerminal()) {
             r = 0;
-        }
-        else {
+        } else {
             INDArray[] output = null;
             output = current.outputAll(stateActionPair.getObservation().getData());
             r = Nd4j.max(output[0]).getDouble(0);

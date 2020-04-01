@@ -60,6 +60,7 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
         createTransformProcess();
     }
 
+    //TODO: this transform process should be decoupled from history processor and configured seperately by the end-user
     private void createTransformProcess() {
         IHistoryProcessor historyProcessor = getHistoryProcessor();
 

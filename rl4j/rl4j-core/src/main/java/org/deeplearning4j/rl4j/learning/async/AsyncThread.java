@@ -238,16 +238,16 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
             reward += stepReply.getReward();
             observation = stepReply.getObservation();
 
-            incrementSteps(1);
+            incrementSteps();
         }
 
         return new Learning.InitMdp(0, observation, reward);
 
     }
 
-    public void incrementSteps(int steps) {
-        stepCount += steps;
-        currentEpisodeStepCount += steps;
+    public void incrementSteps() {
+        stepCount++;
+        currentEpisodeStepCount++;
     }
 
     @AllArgsConstructor
