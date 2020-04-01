@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -47,14 +48,22 @@ public class AsyncLearningTest {
     @Mock
     AsyncGlobal<NeuralNet> mockAsyncGlobal;
 
+    @Mock
+    AsyncConfiguration mockConfiguration;
+
     @Before
     public void setup() {
         asyncLearning = mock(AsyncLearning.class, Mockito.withSettings()
+                .useConstructor()
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
         asyncLearning.addListener(mockTrainingListener);
 
         when(asyncLearning.getAsyncGlobal()).thenReturn(mockAsyncGlobal);
+        when(asyncLearning.getConfiguration()).thenReturn(mockConfiguration);
+
+        // Don't actually start any threads in any of these tests
+        when(mockConfiguration.getNumThread()).thenReturn(0);
     }
 
     @Test
@@ -87,6 +96,7 @@ public class AsyncLearningTest {
     public void when_training_expect_onTrainingProgressCalled() {
         // Arrange
         asyncLearning.setProgressMonitorFrequency(100);
+        when(mockTrainingListener.onTrainingProgress(eq(asyncLearning))).thenReturn(TrainingListener.ListenerResponse.STOP);
 
         // Act
         asyncLearning.train();

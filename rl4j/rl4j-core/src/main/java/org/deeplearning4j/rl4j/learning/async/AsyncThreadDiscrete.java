@@ -125,6 +125,8 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
             obs = stepReply.getObservation();
             reward += stepReply.getReward();
 
+            incrementSteps();
+
         }
 
         boolean episodeComplete = getMdp().isDone();
@@ -138,8 +140,6 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         getAsyncGlobal().applyGradient(updateAlgorithm.computeGradients(current, experienceHandler.generateTrainingBatch()), experienceSize);
 
         experienceHandler.reset();
-
-        incrementSteps(experienceSize);
 
         return new SubEpochReturn(experienceSize, obs, reward, current.getLatestScore(), episodeComplete);
     }

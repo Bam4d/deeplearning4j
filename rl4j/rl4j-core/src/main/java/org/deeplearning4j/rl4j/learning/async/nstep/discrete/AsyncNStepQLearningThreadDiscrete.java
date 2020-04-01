@@ -72,6 +72,6 @@ public class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends Asyn
     @Override
     protected UpdateAlgorithm<IDQN> buildUpdateAlgorithm() {
         int[] shape = getHistoryProcessor() == null ? getMdp().getObservationSpace().getShape() : getHistoryProcessor().getConf().getShape();
-        return new QLearningUpdateAlgorithm(asyncGlobal, shape, getMdp().getActionSpace().getSize(), conf.getTargetDqnUpdateFreq(), conf.getGamma());
+        return new QLearningUpdateAlgorithm(shape, getMdp().getActionSpace().getSize(), conf.getGamma());
     }
 }
