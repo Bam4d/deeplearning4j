@@ -16,6 +16,7 @@
 
 package org.deeplearning4j.rl4j.learning.configuration;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
@@ -40,5 +41,6 @@ public class A3CLearningConfiguration extends LearningConfiguration implements I
      *
      * If this is set to -1 then the target network is updated after every training iteration
      */
+    @Builder.Default
     private int learnerUpdateFrequency = -1;
 }
