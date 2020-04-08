@@ -14,19 +14,30 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package org.datavec.api.transform.split;
+//
+// Created by raver on 6/6/2018.
+//
 
+#ifndef SD_BROADCASTABLEBOOLOP_H
+#define SD_BROADCASTABLEBOOLOP_H
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+#include <graph/Context.h>
+#include "OpDescriptor.h"
+#include "DeclarableOp.h"
+#include "DeclarableCustomOp.h"
 
-/**
- * Created by Alex on 5/03/2016.
- */
-@AllArgsConstructor
-@Data
-public class RandomSplit implements SplitStrategy {
+namespace sd {
+    namespace ops {
+        class ND4J_EXPORT BroadcastableBoolOp : public DeclarableCustomOp{
+        protected:
+            Nd4jStatus validateAndExecute(Context& block) override = 0;
+        public:
+            BroadcastableBoolOp(const char *name, int numTArgs, int numIArgs);
 
-    private double fractionTrain;
-
+            ShapeList *calculateOutputShape(ShapeList *inputShape, sd::graph::Context& block) override;
+        };
+    }
 }
+
+
+#endif //SD_BROADCASTABLEBOOLOP_H

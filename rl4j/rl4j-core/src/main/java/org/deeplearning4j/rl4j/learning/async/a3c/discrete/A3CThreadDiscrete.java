@@ -17,7 +17,10 @@
 package org.deeplearning4j.rl4j.learning.async.a3c.discrete;
 
 import lombok.Getter;
-import org.deeplearning4j.rl4j.learning.async.*;
+import org.deeplearning4j.rl4j.learning.async.AsyncThreadDiscrete;
+import org.deeplearning4j.rl4j.learning.async.IAsyncGlobal;
+import org.deeplearning4j.rl4j.learning.async.UpdateAlgorithm;
+import org.deeplearning4j.rl4j.learning.configuration.A3CLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
@@ -25,8 +28,8 @@ import org.deeplearning4j.rl4j.policy.ACPolicy;
 import org.deeplearning4j.rl4j.policy.Policy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
-import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.api.rng.Random;
+import org.nd4j.linalg.factory.Nd4j;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/23/16.
@@ -36,7 +39,7 @@ import org.nd4j.linalg.api.rng.Random;
 public class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IActorCritic> {
 
     @Getter
-    final protected A3CDiscrete.A3CConfiguration conf;
+    final protected A3CLearningConfiguration configuration;
     @Getter
     final protected IAsyncGlobal<IActorCritic> asyncGlobal;
     @Getter
@@ -45,20 +48,18 @@ public class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<
     final private Random rnd;
 
     public A3CThreadDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IAsyncGlobal<IActorCritic> asyncGlobal,
-                             A3CDiscrete.A3CConfiguration a3cc, int deviceNum, TrainingListenerList listeners,
+                             A3CLearningConfiguration a3cc, int deviceNum, TrainingListenerList listeners,
                              int threadNumber) {
         super(asyncGlobal, mdp, listeners, threadNumber, deviceNum);
-        this.conf = a3cc;
+        this.configuration = a3cc;
         this.asyncGlobal = asyncGlobal;
         this.threadNumber = threadNumber;
 
-        Integer seed = conf.getSeed();
+        Long seed = configuration.getSeed();
         rnd = Nd4j.getRandom();
         if(seed != null) {
             rnd.setSeed(seed + threadNumber);
         }
-
-        setUpdateAlgorithm(buildUpdateAlgorithm());
     }
 
     @Override
@@ -66,9 +67,12 @@ public class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<
         return new ACPolicy(net, rnd);
     }
 
+    /**
+     *  calc the gradients based on the n-step rewards
+     */
     @Override
     protected UpdateAlgorithm<IActorCritic> buildUpdateAlgorithm() {
         int[] shape = getHistoryProcessor() == null ? getMdp().getObservationSpace().getShape() : getHistoryProcessor().getConf().getShape();
-        return new AdvantageActorCriticUpdateAlgorithm(asyncGlobal.getCurrent().isRecurrent(), shape, getMdp().getActionSpace().getSize(), conf.gamma);
+        return new AdvantageActorCriticUpdateAlgorithm(asyncGlobal.getCurrent().isRecurrent(), shape, getMdp().getActionSpace().getSize(), configuration.getGamma());
     }
 }

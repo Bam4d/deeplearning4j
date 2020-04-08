@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Skymind, Inc.
+ * Copyright (c) 2015-2019 Skymind, Inc.
+ * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
@@ -22,13 +23,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.deeplearning4j.rl4j.learning.NeuralNetFetchable;
-import org.nd4j.linalg.primitives.Pair;
 import org.deeplearning4j.rl4j.learning.ILearning;
+import org.deeplearning4j.rl4j.learning.NeuralNetFetchable;
+import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.deeplearning4j.rl4j.network.dqn.DQN;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
 import org.deeplearning4j.util.ModelSerializer;
+import org.nd4j.linalg.primitives.Pair;
 
 import java.io.*;
 import java.nio.file.*;
@@ -303,7 +305,7 @@ public class DataManager implements IDataManager {
     public static class Info {
         String trainingName;
         String mdpName;
-        ILearning.LConfiguration conf;
+        ILearningConfiguration conf;
         int stepCounter;
         long millisTime;
     }

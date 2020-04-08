@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Skymind, Inc.
+ * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
@@ -14,19 +14,27 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package org.datavec.api.transform.split;
+package org.deeplearning4j.rl4j.network.configuration;
 
-
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
-/**
- * Created by Alex on 5/03/2016.
- */
-@AllArgsConstructor
 @Data
-public class RandomSplit implements SplitStrategy {
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+public class DQNDenseNetworkConfiguration extends NetworkConfiguration {
 
-    private double fractionTrain;
+    /**
+     * The number of layers in the dense network
+     */
+    @Builder.Default
+    private int numLayers = 3;
 
+    /**
+     * The number of hidden neurons in each layer
+     */
+    @Builder.Default
+    private int numHiddenNodes = 100;
 }

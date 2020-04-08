@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Skymind, Inc.
+ * Copyright (c) 2015-2019 Skymind, Inc.
+ * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
@@ -24,6 +25,7 @@ import org.deeplearning4j.rl4j.experience.ExperienceHandler;
 import org.deeplearning4j.rl4j.experience.ReplayMemoryExperienceHandler;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.Learning;
+import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.Transition;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.TDTargetAlgorithm.DoubleDQN;
@@ -47,21 +49,20 @@ import java.util.List;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/18/16.
- *
+ * <p>
  * DQN or Deep Q-Learning in the Discrete domain
- *
+ * <p>
  * http://arxiv.org/abs/1312.5602
- *
  */
-public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O, Integer, DiscreteSpace> {
+public abstract class QLearningDiscrete<OBSERVATION extends Encodable> extends QLearning<OBSERVATION, Integer, DiscreteSpace> {
 
     @Getter
-    final private QLConfiguration configuration;
-    private final LegacyMDPWrapper<O, Integer, DiscreteSpace> mdp;
+    final private QLearningConfiguration configuration;
+    private final LegacyMDPWrapper<OBSERVATION, Integer, DiscreteSpace> mdp;
     @Getter
-    private DQNPolicy<O> policy;
+    private DQNPolicy<OBSERVATION> policy;
     @Getter
-    private EpsGreedy<O, Integer, DiscreteSpace> egPolicy;
+    private EpsGreedy<OBSERVATION, Integer, DiscreteSpace> egPolicy;
 
     @Getter
     final private IDQN qNetwork;
@@ -78,19 +79,19 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
     @Getter(AccessLevel.PROTECTED) @Setter
     private ExperienceHandler<Integer, Transition<Integer>> experienceHandler;
 
-    protected LegacyMDPWrapper<O, Integer, DiscreteSpace> getLegacyMDPWrapper() {
+    protected LegacyMDPWrapper<OBSERVATION, Integer, DiscreteSpace> getLegacyMDPWrapper() {
         return mdp;
     }
 
-    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLConfiguration conf,
-                             int epsilonNbStep) {
+    public QLearningDiscrete(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf, int epsilonNbStep) {
         this(mdp, dqn, conf, epsilonNbStep, Nd4j.getRandomFactory().getNewRandomInstance(conf.getSeed()));
     }
 
-    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLConfiguration conf,
+    public QLearningDiscrete(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf,
                              int epsilonNbStep, Random random) {
+        super(conf);
         this.configuration = conf;
-        this.mdp = new LegacyMDPWrapper<O, Integer, DiscreteSpace>(mdp, null);
+        this.mdp = new LegacyMDPWrapper<OBSERVATION, Integer, DiscreteSpace>(mdp, null);
         qNetwork = dqn;
         targetQNetwork = dqn.clone();
         policy = new DQNPolicy(getQNetwork());
@@ -104,7 +105,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         experienceHandler = new ReplayMemoryExperienceHandler(conf.getExpRepMaxSize(), conf.getBatchSize(), random);
     }
 
-    public MDP<O, Integer, DiscreteSpace> getMdp() {
+    public MDP<OBSERVATION, Integer, DiscreteSpace> getMdp() {
         return mdp.getWrappedMDP();
     }
 
@@ -129,6 +130,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
 
     /**
      * Single step of training
+     *
      * @param obs last obs
      * @return relevant info for next step
      */
@@ -137,8 +139,8 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         boolean isHistoryProcessor = getHistoryProcessor() != null;
         int skipFrame = isHistoryProcessor ? getHistoryProcessor().getConf().getSkipFrame() : 1;
         int historyLength = isHistoryProcessor ? getHistoryProcessor().getConf().getHistoryLength() : 1;
-        int updateStart = getConfiguration().getUpdateStart()
-                        + ((getConfiguration().getBatchSize() + historyLength) * skipFrame);
+        int updateStart = this.getConfiguration().getUpdateStart()
+                + ((this.getConfiguration().getBatchSize() + historyLength) * skipFrame);
 
         Double maxQ = Double.NaN; //ignore if Nan for stats
 

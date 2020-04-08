@@ -1,5 +1,4 @@
 /*******************************************************************************
- * Copyright (c) 2015-2019 Skymind, Inc.
  * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
@@ -15,33 +14,16 @@
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
 
-package org.deeplearning4j.rl4j.learning;
+package org.deeplearning4j.rl4j.learning.configuration;
 
-import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
-import org.deeplearning4j.rl4j.mdp.MDP;
-import org.deeplearning4j.rl4j.policy.IPolicy;
-import org.deeplearning4j.rl4j.space.ActionSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
+public interface ILearningConfiguration {
+    Long getSeed();
 
-/**
- * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/19/16.
- *
- * A common interface that any training method should implement
- */
-public interface ILearning<O extends Encodable, A, AS extends ActionSpace<A>> {
+    int getMaxEpochStep();
 
-    IPolicy<O, A> getPolicy();
+    int getMaxStep();
 
-    void train();
+    double getGamma();
 
-    int getStepCount();
-
-    ILearningConfiguration getConfiguration();
-
-    MDP<O, A, AS> getMdp();
-
-    IHistoryProcessor getHistoryProcessor();
-
-
-
+    double getRewardFactor();
 }

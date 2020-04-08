@@ -1,5 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Skymind, Inc.
+ * Copyright (c) 2015-2019 Skymind, Inc.
+ * Copyright (c) 2020 Konduit K.K.
+ *
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
@@ -20,10 +22,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.deeplearning4j.gym.StepReply;
-import org.deeplearning4j.nn.gradient.Gradient;
 import org.deeplearning4j.rl4j.experience.ExperienceHandler;
 import org.deeplearning4j.rl4j.experience.StateActionExperienceHandler;
-import org.deeplearning4j.rl4j.experience.StateActionPair;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
@@ -32,9 +32,6 @@ import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
-import org.nd4j.linalg.api.ndarray.INDArray;
-
-import java.util.List;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
@@ -111,7 +108,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
             }
 
             StepReply<Observation> stepReply = getLegacyMDPWrapper().step(action);
-            accuReward += stepReply.getReward() * getConf().getRewardFactor();
+            accuReward += stepReply.getReward() * getConfiguration().getRewardFactor();
 
             if (!obs.isSkipped()) {
                 experienceHandler.addExperience(obs, action, accuReward, stepReply.isDone());

@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2020 Konduit K. K.
+ * Copyright (c) 2015-2019 Skymind, Inc.
+ * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
@@ -17,13 +18,12 @@
 package org.deeplearning4j.rl4j.learning.async;
 
 import org.deeplearning4j.gym.StepReply;
-import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
+import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.policy.Policy;
-import org.deeplearning4j.rl4j.space.Box;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
@@ -38,7 +38,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,7 +49,7 @@ public class AsyncThreadDiscreteTest {
     AsyncThreadDiscrete<Encodable, NeuralNet> asyncThreadDiscrete;
 
     @Mock
-    AsyncConfiguration mockAsyncConfiguration;
+    IAsyncLearningConfiguration mockAsyncConfiguration;
 
     @Mock
     UpdateAlgorithm<NeuralNet> mockUpdateAlgorithm;
@@ -124,7 +123,7 @@ public class AsyncThreadDiscreteTest {
 
         asyncThreadDiscrete.setUpdateAlgorithm(mockUpdateAlgorithm);
 
-        when(asyncThreadDiscrete.getConf()).thenReturn(mockAsyncConfiguration);
+        when(asyncThreadDiscrete.getConfiguration()).thenReturn(mockAsyncConfiguration);
         when(mockAsyncConfiguration.getRewardFactor()).thenReturn(1.0);
         when(asyncThreadDiscrete.getAsyncGlobal()).thenReturn(mockAsyncGlobal);
         when(asyncThreadDiscrete.getPolicy(eq(mockGlobalCurrentNetwork))).thenReturn(mockGlobalCurrentPolicy);

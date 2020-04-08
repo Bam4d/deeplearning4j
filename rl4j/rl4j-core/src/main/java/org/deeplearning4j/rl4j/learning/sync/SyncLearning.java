@@ -1,5 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Skymind, Inc.
+ * Copyright (c) 2015-2019 Skymind, Inc.
+ * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
@@ -64,7 +65,7 @@ public abstract class SyncLearning<OBSERVATION extends Encodable, ACTION, ACTION
     /**
      * This method will train the model<p>
      * The training stop when:<br>
-     * - the number of steps reaches the maximum defined in the configuration (see {@link LConfiguration#getMaxStep() LConfiguration.getMaxStep()})<br>
+     * - the number of steps reaches the maximum defined in the configuration (see {@link ILearningConfiguration#getMaxStep() LConfiguration.getMaxStep()})<br>
      * OR<br>
      * - a listener explicitly stops it<br>
      * <p>

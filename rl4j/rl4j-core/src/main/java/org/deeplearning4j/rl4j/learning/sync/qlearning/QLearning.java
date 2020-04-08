@@ -1,12 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2015-2018 Skymind, Inc.
+ * Copyright (c) 2015-2019 Skymind, Inc.
+ * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Apache License, Version 2.0 which is available at
  * https://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * distributed under the License is distributed on an "ACTION_SPACE IS" BACTION_SPACEIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations
  * under the License.
@@ -18,15 +19,20 @@ package org.deeplearning4j.rl4j.learning.sync.qlearning;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
+import org.deeplearning4j.rl4j.learning.sync.ExpReplay;
+import org.deeplearning4j.rl4j.learning.sync.IExpReplay;
 import org.deeplearning4j.rl4j.learning.sync.SyncLearning;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
@@ -36,6 +42,8 @@ import org.deeplearning4j.rl4j.space.ActionSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.util.IDataManager.StatEntry;
 import org.deeplearning4j.rl4j.util.LegacyMDPWrapper;
+import org.nd4j.linalg.api.rng.Random;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,15 +55,36 @@ import java.util.List;
  * hopefully one day for the  Continuous domain.
  */
 @Slf4j
-public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A>>
-                extends SyncLearning<O, A, AS, IDQN>
+public abstract class QLearning<OBSERVATION extends Encodable, ACTION, ACTION_SPACE extends ActionSpace<ACTION>>
+                extends SyncLearning<OBSERVATION, ACTION, ACTION_SPACE, IDQN>
                 implements TargetQNetworkSource, IEpochTrainer {
 
-    protected abstract LegacyMDPWrapper<O, A, AS> getLegacyMDPWrapper();
+    @Getter
+    @Setter(AccessLevel.PROTECTED)
+    protected IExpReplay<ACTION> expReplay;
 
-    protected abstract EpsGreedy<O, A, AS> getEgPolicy();
+    protected abstract LegacyMDPWrapper<OBSERVATION, ACTION, ACTION_SPACE> getLegacyMDPWrapper();
 
-    public abstract MDP<O, A, AS> getMdp();
+    public QLearning(QLearningConfiguration conf) {
+        this(conf, getSeededRandom(conf.getSeed()));
+    }
+
+    public QLearning(QLearningConfiguration conf, Random random) {
+        expReplay = new ExpReplay<>(conf.getExpRepMaxSize(), conf.getBatchSize(), random);
+    }
+
+    private static Random getSeededRandom(Long seed) {
+        Random rnd = Nd4j.getRandom();
+        if(seed != null) {
+            rnd.setSeed(seed);
+        }
+
+        return rnd;
+    }
+
+    protected abstract EpsGreedy<OBSERVATION, ACTION, ACTION_SPACE> getEgPolicy();
+
+    public abstract MDP<OBSERVATION, ACTION, ACTION_SPACE> getMdp();
 
     public abstract IDQN getQNetwork();
 
@@ -72,7 +101,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         return getQNetwork();
     }
 
-    public abstract QLConfiguration getConfiguration();
+    public abstract QLearningConfiguration getConfiguration();
 
     protected abstract void preEpoch();
 
@@ -152,10 +181,10 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
 
         double reward = 0;
 
-        LegacyMDPWrapper<O, A, AS> mdp = getLegacyMDPWrapper();
+        LegacyMDPWrapper<OBSERVATION, ACTION, ACTION_SPACE> mdp = getLegacyMDPWrapper();
         Observation observation = mdp.reset();
 
-        A action = mdp.getActionSpace().noOp(); //by convention should be the NO_OP
+        ACTION action = mdp.getActionSpace().noOp(); //by convention should be the NO_OP
         while (observation.isSkipped() && !mdp.isDone()) {
             StepReply<Observation> stepReply = mdp.step(action);
 
@@ -178,7 +207,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         double reward;
         int episodeLength;
         List<Double> scores;
-        float epsilon;
+        double epsilon;
         double startQ;
         double meanQ;
     }
@@ -193,12 +222,14 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
 
     }
 
+
     @Data
     @AllArgsConstructor
     @Builder
+    @Deprecated
     @EqualsAndHashCode(callSuper = false)
     @JsonDeserialize(builder = QLConfiguration.QLConfigurationBuilder.class)
-    public static class QLConfiguration implements LConfiguration {
+    public static class QLConfiguration {
 
         Integer seed;
         int maxEpochStep;
@@ -217,7 +248,25 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         @JsonPOJOBuilder(withPrefix = "")
         public static final class QLConfigurationBuilder {
         }
-    }
 
+        public QLearningConfiguration toLearningConfiguration() {
+
+            return QLearningConfiguration.builder()
+                    .seed(seed.longValue())
+                    .maxEpochStep(maxEpochStep)
+                    .maxStep(maxStep)
+                    .expRepMaxSize(expRepMaxSize)
+                    .batchSize(batchSize)
+                    .targetDqnUpdateFreq(targetDqnUpdateFreq)
+                    .updateStart(updateStart)
+                    .rewardFactor(rewardFactor)
+                    .gamma(gamma)
+                    .errorClamp(errorClamp)
+                    .minEpsilon(minEpsilon)
+                    .epsilonNbStep(epsilonNbStep)
+                    .doubleDQN(doubleDQN)
+                    .build();
+        }
+    }
 
 }

@@ -43,6 +43,7 @@ release.properties
 *.sha1
 *.ser
 *.so
+*.orig
 *.jpg
 *.png
 *.iml
