@@ -74,6 +74,7 @@ public class ALEMDP implements MDP<ALEMDP.GameScreen, Integer, DiscreteSpace> {
         int[] shape = {(int)ale.getScreen().height(), (int)ale.getScreen().width(), 3};
         observationSpace = new ArrayObservationSpace<>(shape);
         screenBuffer = new byte[shape[0] * shape[1] * shape[2]];
+
     }
 
     public void setupGame() {
@@ -115,6 +116,7 @@ public class ALEMDP implements MDP<ALEMDP.GameScreen, Integer, DiscreteSpace> {
         double r = ale.act(actions[action]) * scaleFactor;
         log.info(ale.getEpisodeFrameNumber() + " " + r + " " + action + " ");
         ale.getScreenRGB(screenBuffer);
+
         return new StepReply(new GameScreen(screenBuffer), r, ale.game_over(), null);
     }
 
@@ -143,9 +145,10 @@ public class ALEMDP implements MDP<ALEMDP.GameScreen, Integer, DiscreteSpace> {
         double[] array;
 
         public GameScreen(byte[] screen) {
+
             array = new double[screen.length];
             for (int i = 0; i < screen.length; i++) {
-                array[i] = (screen[i] & 0xFF) / 255.0;
+                array[i] = screen[i] / 255.0;
             }
         }
 
