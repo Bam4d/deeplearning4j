@@ -3,6 +3,7 @@ package org.deeplearning4j.rl4j.util;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.datavec.image.loader.Java2DNativeImageLoader;
 import org.datavec.image.transform.ColorConversionTransform;
 import org.datavec.image.transform.CropImageTransform;
 import org.datavec.image.transform.MultiImageTransform;
@@ -11,6 +12,7 @@ import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.observation.Observation;
+import org.deeplearning4j.rl4j.observation.transform.ImageDebugTransform;
 import org.deeplearning4j.rl4j.observation.transform.TransformProcess;
 import org.deeplearning4j.rl4j.observation.transform.filter.UniformSkippingFilter;
 import org.deeplearning4j.rl4j.observation.transform.legacy.EncodableToINDArrayTransform;
@@ -24,6 +26,8 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +49,7 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
 
     private int skipFrame = 1;
     private int steps = 0;
+
 
     public LegacyMDPWrapper(MDP<OBSERVATION, A, AS> wrappedMDP, IHistoryProcessor historyProcessor) {
         this.wrappedMDP = wrappedMDP;
@@ -74,7 +79,9 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
                     .filter(new UniformSkippingFilter(skipFrame))
                     .transform("data", new EncodableToImageWritableTransform(shape[0], shape[1], shape[2]))
                     .transform("data", new MultiImageTransform(
+                            new ImageDebugTransform(160,210),
                             new ResizeImageTransform(historyProcessor.getConf().getRescaledWidth(), historyProcessor.getConf().getRescaledHeight()),
+                            new ImageDebugTransform(160,210),
                             new ColorConversionTransform(COLOR_BGR2GRAY),
                             new CropImageTransform(historyProcessor.getConf().getOffsetY(), historyProcessor.getConf().getOffsetX(), finalHeight, finalWidth)
                     ))
@@ -127,6 +134,7 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
 
         Map<String, Object> channelsData = buildChannelsData(rawStepReply.getObservation());
         Observation observation =  transformProcess.transform(channelsData, stepOfObservation, rawStepReply.isDone());
+
         return new StepReply<Observation>(observation, rawStepReply.getReward(), rawStepReply.isDone(), rawStepReply.getInfo());
     }
 
