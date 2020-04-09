@@ -132,9 +132,9 @@ public class HistoryMergeTransform implements Operation<INDArray, INDArray>, Res
             return this;
         }
 
-        public HistoryMergeTransform build() {
+        public HistoryMergeTransform build(int frameStackLength) {
             if(historyMergeElementStore == null) {
-                historyMergeElementStore = new CircularFifoStore();
+                historyMergeElementStore = new CircularFifoStore(frameStackLength);
             }
 
             if(historyMergeAssembler == null) {
