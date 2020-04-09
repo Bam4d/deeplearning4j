@@ -15,52 +15,33 @@
  ******************************************************************************/
 package org.deeplearning4j.rl4j.observation.transform.legacy;
 
+import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.OpenCVFrameConverter;
+import org.bytedeco.opencv.opencv_core.Mat;
 import org.datavec.api.transform.Operation;
 import org.datavec.image.data.ImageWritable;
-import org.datavec.image.loader.Java2DNativeImageLoader;
 import org.datavec.image.loader.NativeImageLoader;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
-import javax.swing.*;
-import java.awt.*;
+import static org.bytedeco.opencv.global.opencv_core.CV_32FC;
+import static org.bytedeco.opencv.global.opencv_core.CV_32FC3;
+import static org.bytedeco.opencv.global.opencv_core.CV_32S;
+import static org.bytedeco.opencv.global.opencv_core.CV_32SC;
+import static org.bytedeco.opencv.global.opencv_core.CV_32SC3;
+import static org.bytedeco.opencv.global.opencv_core.CV_64FC;
+import static org.bytedeco.opencv.global.opencv_core.CV_8UC3;
 
 public class EncodableToImageWritableTransform implements Operation<Encodable, ImageWritable> {
 
+    final static NativeImageLoader nativeImageLoader = new NativeImageLoader();
     private final OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
-    private final int height;
-    private final int width;
-    private final int colorChannels;
-
-    final JFrame frame = new JFrame();
-    final Canvas canvas = new Canvas();
-    Java2DNativeImageLoader j2dNil = new Java2DNativeImageLoader();
-
-    public EncodableToImageWritableTransform(int height, int width, int colorChannels) {
-        this.height = height;
-        this.width = width;
-        this.colorChannels = colorChannels;
-
-    }
 
     @Override
     public ImageWritable transform(Encodable encodable) {
-
-        // have to downcast to a float here due to this error in opencv:
-        /**
-         * > Unsupported depth of input image:
-         * >     'VDepth::contains(depth)'
-         * > where
-         * >     'depth' is 6 (CV_64F)
-         */
-
-        INDArray indArray = Nd4j.create(encodable.toArray()).castTo(DataType.FLOAT).reshape(colorChannels, height, width);
-
-        NativeImageLoader nativeImageLoader = new NativeImageLoader();
-        return new ImageWritable(nativeImageLoader.asFrame(indArray));
+        return new ImageWritable(nativeImageLoader.asFrame(encodable.getData(), Frame.DEPTH_UBYTE));
     }
 
 }

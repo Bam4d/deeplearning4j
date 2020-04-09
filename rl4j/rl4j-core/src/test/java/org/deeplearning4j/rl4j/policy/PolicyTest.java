@@ -31,7 +31,7 @@ import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.space.ActionSpace;
 import org.deeplearning4j.rl4j.support.MockDQN;
-import org.deeplearning4j.rl4j.support.MockEncodable;
+import org.deeplearning4j.rl4j.support.MockObservation;
 import org.deeplearning4j.rl4j.support.MockHistoryProcessor;
 import org.deeplearning4j.rl4j.support.MockMDP;
 import org.deeplearning4j.rl4j.support.MockNeuralNet;
@@ -227,7 +227,7 @@ public class PolicyTest {
         assertEquals(0, dqn.outputParams.size());
     }
 
-    public static class MockRefacPolicy extends Policy<MockEncodable, Integer> {
+    public static class MockRefacPolicy extends Policy<MockObservation, Integer> {
 
         private NeuralNet neuralNet;
         private final int[] shape;
@@ -257,8 +257,8 @@ public class PolicyTest {
         }
 
         @Override
-        protected <AS extends ActionSpace<Integer>> Learning.InitMdp<Observation> refacInitMdp(LegacyMDPWrapper<MockEncodable, Integer, AS> mdpWrapper, IHistoryProcessor hp) {
-            mdpWrapper.setTransformProcess(MockMDP.buildTransformProcess(shape, skipFrame, historyLength));
+        protected <AS extends ActionSpace<Integer>> Learning.InitMdp<Observation> refacInitMdp(LegacyMDPWrapper<MockObservation, Integer, AS> mdpWrapper, IHistoryProcessor hp) {
+            mdpWrapper.setTransformProcess(MockMDP.buildTransformProcess(skipFrame, historyLength));
             return super.refacInitMdp(mdpWrapper, hp);
         }
     }

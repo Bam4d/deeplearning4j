@@ -25,18 +25,18 @@ import org.deeplearning4j.rl4j.learning.configuration.AsyncQLearningConfiguratio
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.policy.DQNPolicy;
 import org.deeplearning4j.rl4j.policy.EpsGreedy;
 import org.deeplearning4j.rl4j.policy.Policy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.rng.Random;
 import org.nd4j.linalg.factory.Nd4j;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
  */
-public class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<O, IDQN> {
+public class AsyncNStepQLearningThreadDiscrete<OBSERVATION extends Encodable> extends AsyncThreadDiscrete<OBSERVATION, IDQN> {
 
     @Getter
     final protected AsyncQLearningConfiguration configuration;
@@ -47,7 +47,7 @@ public class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends Asyn
 
     final private Random rnd;
 
-    public AsyncNStepQLearningThreadDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IAsyncGlobal<IDQN> asyncGlobal,
+    public AsyncNStepQLearningThreadDiscrete(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IAsyncGlobal<IDQN> asyncGlobal,
                                              AsyncQLearningConfiguration configuration,
                                              TrainingListenerList listeners, int threadNumber, int deviceNum) {
         super(asyncGlobal, mdp, listeners, threadNumber, deviceNum);
@@ -64,7 +64,7 @@ public class AsyncNStepQLearningThreadDiscrete<O extends Encodable> extends Asyn
         setUpdateAlgorithm(buildUpdateAlgorithm());
     }
 
-    public Policy<O, Integer> getPolicy(IDQN nn) {
+    public Policy<OBSERVATION, Integer> getPolicy(IDQN nn) {
         return new EpsGreedy(new DQNPolicy(nn), getMdp(), configuration.getUpdateStart(), configuration.getEpsilonNbStep(),
                 rnd, configuration.getMinEpsilon(), this);
     }

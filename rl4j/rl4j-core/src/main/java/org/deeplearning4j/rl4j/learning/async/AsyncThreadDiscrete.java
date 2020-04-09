@@ -28,10 +28,10 @@ import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.policy.IPolicy;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
@@ -39,8 +39,8 @@ import org.deeplearning4j.rl4j.space.Encodable;
  * Async Learning specialized for the Discrete Domain
  *
  */
-public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends NeuralNet>
-                extends AsyncThread<O, Integer, DiscreteSpace, NN> {
+public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN extends NeuralNet>
+                extends AsyncThread<OBSERVATION, Integer, DiscreteSpace, NN> {
 
     @Getter
     private NN current;
@@ -53,7 +53,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
     private ExperienceHandler experienceHandler = new StateActionExperienceHandler();
 
     public AsyncThreadDiscrete(IAsyncGlobal<NN> asyncGlobal,
-                               MDP<O, Integer, DiscreteSpace> mdp,
+                               MDP<OBSERVATION, Integer, DiscreteSpace> mdp,
                                TrainingListenerList listeners,
                                int threadNumber,
                                int deviceNum) {
@@ -91,7 +91,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         current.copy(getAsyncGlobal().getTarget());
 
         Observation obs = sObs;
-        IPolicy<O, Integer> policy = getPolicy(current);
+        IPolicy<OBSERVATION, Integer> policy = getPolicy(current);
 
         Integer action = getMdp().getActionSpace().noOp();
         IHistoryProcessor hp = getHistoryProcessor();
