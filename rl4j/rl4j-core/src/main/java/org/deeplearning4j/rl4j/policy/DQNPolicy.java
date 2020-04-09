@@ -20,8 +20,8 @@ import lombok.AllArgsConstructor;
 import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.network.dqn.DQN;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
-import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.space.Encodable;
+import org.deeplearning4j.rl4j.observation.Observation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.io.IOException;
@@ -33,12 +33,12 @@ import java.io.IOException;
  * by the dqn model
  */
 @AllArgsConstructor
-public class DQNPolicy<O extends Encodable> extends Policy<O, Integer> {
+public class DQNPolicy<OBSERVATION extends Encodable> extends Policy<OBSERVATION, Integer> {
 
     final private IDQN dqn;
 
-    public static <O extends Encodable> DQNPolicy<O> load(String path) throws IOException {
-        return new DQNPolicy<O>(DQN.load(path));
+    public static <OBSERVATION extends Encodable> DQNPolicy<OBSERVATION> load(String path) throws IOException {
+        return new DQNPolicy<>(DQN.load(path));
     }
 
     public IDQN getNeuralNet() {

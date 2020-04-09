@@ -3,31 +3,26 @@ package org.deeplearning4j.rl4j.util;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.datavec.image.loader.Java2DNativeImageLoader;
 import org.datavec.image.transform.ColorConversionTransform;
 import org.datavec.image.transform.CropImageTransform;
 import org.datavec.image.transform.MultiImageTransform;
 import org.datavec.image.transform.ResizeImageTransform;
+import org.datavec.image.transform.ShowImageTransform;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.mdp.MDP;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.observation.Observation;
-import org.deeplearning4j.rl4j.observation.transform.ImageDebugTransform;
 import org.deeplearning4j.rl4j.observation.transform.TransformProcess;
 import org.deeplearning4j.rl4j.observation.transform.filter.UniformSkippingFilter;
-import org.deeplearning4j.rl4j.observation.transform.legacy.EncodableToINDArrayTransform;
 import org.deeplearning4j.rl4j.observation.transform.legacy.EncodableToImageWritableTransform;
 import org.deeplearning4j.rl4j.observation.transform.legacy.ImageWritableToINDArrayTransform;
 import org.deeplearning4j.rl4j.observation.transform.operation.HistoryMergeTransform;
 import org.deeplearning4j.rl4j.observation.transform.operation.SimpleNormalizationTransform;
 import org.deeplearning4j.rl4j.space.ActionSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,20 +67,25 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
         if(historyProcessor != null && shape.length == 3) {
             int skipFrame = historyProcessor.getConf().getSkipFrame();
 
-            int finalHeight = historyProcessor.getConf().getCroppingHeight();
-            int finalWidth = historyProcessor.getConf().getCroppingWidth();
+            int height = shape[0];
+            int width = shape[1];
+
+            int cropBottom = height - historyProcessor.getConf().getCroppingHeight();
+            int cropRight = width - historyProcessor.getConf().getCroppingWidth();
 
             transformProcess = TransformProcess.builder()
                     .filter(new UniformSkippingFilter(skipFrame))
-                    .transform("data", new EncodableToImageWritableTransform(shape[0], shape[1], shape[2]))
+                    .transform("data", new EncodableToImageWritableTransform())
                     .transform("data", new MultiImageTransform(
-                            new ImageDebugTransform(160,210),
+                            new ShowImageTransform("original"),
+                            new CropImageTransform(historyProcessor.getConf().getOffsetY(), historyProcessor.getConf().getOffsetX(), cropBottom, cropRight),
+                            new ShowImageTransform("crop"),
                             new ResizeImageTransform(historyProcessor.getConf().getRescaledWidth(), historyProcessor.getConf().getRescaledHeight()),
-                            new ImageDebugTransform(160,210),
+                            new ShowImageTransform("crop + resize"),
                             new ColorConversionTransform(COLOR_BGR2GRAY),
-                            new CropImageTransform(historyProcessor.getConf().getOffsetY(), historyProcessor.getConf().getOffsetX(), finalHeight, finalWidth)
+                            new ShowImageTransform("crop + resize + greyscale")
                     ))
-                    .transform("data", new ImageWritableToINDArrayTransform(finalHeight, finalWidth))
+                    .transform("data", new ImageWritableToINDArrayTransform())
                     .transform("data", new SimpleNormalizationTransform(0.0, 255.0))
                     .transform("data", HistoryMergeTransform.builder()
                             .isFirstDimenstionBatch(true)
@@ -94,7 +94,6 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
         }
         else {
             transformProcess = TransformProcess.builder()
-                    .transform("data", new EncodableToINDArrayTransform(shape))
                     .build("data");
         }
     }
@@ -169,12 +168,7 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
     }
 
     private INDArray getInput(OBSERVATION obs) {
-        INDArray arr = Nd4j.create(obs.toArray());
-        int[] shape = observationSpace.getShape();
-        if (shape.length == 1)
-            return arr.reshape(new long[] {1, arr.length()});
-        else
-            return arr.reshape(shape);
+        return obs.getData();
     }
 
     public static class WrapperObservationSpace implements ObservationSpace<Observation> {
