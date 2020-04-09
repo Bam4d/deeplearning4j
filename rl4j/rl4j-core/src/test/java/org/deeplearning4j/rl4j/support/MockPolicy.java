@@ -10,13 +10,13 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockPolicy implements IPolicy<MockEncodable, Integer> {
+public class MockPolicy implements IPolicy<MockObservation, Integer> {
 
     public int playCallCount = 0;
     public List<INDArray> actionInputs = new ArrayList<INDArray>();
 
     @Override
-    public <AS extends ActionSpace<Integer>> double play(MDP<MockEncodable, Integer, AS> mdp, IHistoryProcessor hp) {
+    public <AS extends ActionSpace<Integer>> double play(MDP<MockObservation, Integer, AS> mdp, IHistoryProcessor hp) {
         ++playCallCount;
         return 0;
     }
