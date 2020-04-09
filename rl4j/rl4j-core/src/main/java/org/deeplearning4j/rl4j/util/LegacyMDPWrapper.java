@@ -66,6 +66,7 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
 
         if(historyProcessor != null && shape.length == 3) {
             int skipFrame = historyProcessor.getConf().getSkipFrame();
+            int frameStackLength = historyProcessor.getConf().getHistoryLength();
 
             int height = shape[0];
             int width = shape[1];
@@ -89,7 +90,7 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
                     .transform("data", new SimpleNormalizationTransform(0.0, 255.0))
                     .transform("data", HistoryMergeTransform.builder()
                             .isFirstDimenstionBatch(true)
-                            .build())
+                            .build(frameStackLength))
                     .build("data");
         }
         else {

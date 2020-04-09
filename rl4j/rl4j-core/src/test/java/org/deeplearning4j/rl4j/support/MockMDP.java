@@ -91,7 +91,7 @@ public class MockMDP implements MDP<MockObservation, Integer, DiscreteSpace> {
                 .transform("data", new SimpleNormalizationTransform(0.0, 255.0))
                 .transform("data", HistoryMergeTransform.builder()
                         .elementStore(new CircularFifoStore(historyLength))
-                        .build())
+                        .build(4))
                 .build("data");
     }
 
