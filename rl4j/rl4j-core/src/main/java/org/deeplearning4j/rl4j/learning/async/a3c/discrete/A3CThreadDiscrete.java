@@ -72,6 +72,6 @@ public class A3CThreadDiscrete<O extends Encodable> extends AsyncThreadDiscrete<
     @Override
     protected UpdateAlgorithm<IActorCritic> buildUpdateAlgorithm() {
         int[] shape = getHistoryProcessor() == null ? getMdp().getObservationSpace().getShape() : getHistoryProcessor().getConf().getShape();
-        return new AdvantageActorCriticUpdateAlgorithm(asyncGlobal.getCurrent().isRecurrent(), shape, getMdp().getActionSpace().getSize(), conf.getLearnerUpdateFrequency(), conf.gamma);
+        return new AdvantageActorCriticUpdateAlgorithm(asyncGlobal.getCurrent().isRecurrent(), shape, getMdp().getActionSpace().getSize(), conf.getGamma());
     }
 }

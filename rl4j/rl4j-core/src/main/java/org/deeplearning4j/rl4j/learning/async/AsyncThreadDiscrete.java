@@ -42,12 +42,11 @@ import java.util.Stack;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
- *
+ * <p>
  * Async Learning specialized for the Discrete Domain
- *
  */
 public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends NeuralNet>
-                extends AsyncThread<O, Integer, DiscreteSpace, NN> {
+        extends AsyncThread<O, Integer, DiscreteSpace, NN> {
 
     @Getter
     private NN current;
@@ -66,7 +65,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
                                int deviceNum) {
         super(mdp, listeners, threadNumber, deviceNum);
         synchronized (asyncGlobal) {
-            current = (NN)asyncGlobal.getCurrent().clone();
+            current = (NN) asyncGlobal.getCurrent().clone();
         }
     }
 
@@ -89,7 +88,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
      * "Subepoch"  correspond to the t_max-step iterations
      * that stack rewards with t_max MiniTrans
      *
-     * @param sObs the obs to start from
+     * @param sObs  the obs to start from
      * @param nstep the number of max nstep (step until t_max or state is terminal)
      * @return subepoch training informations
      */
@@ -145,7 +144,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
     }
 
     private boolean hasCollectedNSteps(ExperienceHandler experienceHandler, int nSteps, int skipFrames) {
-        int experienceSize = experienceHandler.getExperience().size();
+        int experienceSize = experienceHandler.getTrainingBatchSize();
         int updateFrequency = nSteps * skipFrames;
         return experienceSize > 0 && experienceSize % updateFrequency == 0;
     }

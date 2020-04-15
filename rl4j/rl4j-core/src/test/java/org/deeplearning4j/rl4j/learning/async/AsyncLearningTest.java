@@ -17,6 +17,7 @@
 
 package org.deeplearning4j.rl4j.learning.async;
 
+import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListener;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.space.ActionSpace;
@@ -49,7 +50,7 @@ public class AsyncLearningTest {
     AsyncGlobal<NeuralNet> mockAsyncGlobal;
 
     @Mock
-    AsyncConfiguration mockConfiguration;
+    IAsyncLearningConfiguration mockConfiguration;
 
     @Before
     public void setup() {
@@ -63,7 +64,7 @@ public class AsyncLearningTest {
         when(asyncLearning.getConfiguration()).thenReturn(mockConfiguration);
 
         // Don't actually start any threads in any of these tests
-        when(mockConfiguration.getNumThread()).thenReturn(0);
+        when(mockConfiguration.getNumThreads()).thenReturn(0);
     }
 
     @Test

@@ -18,7 +18,6 @@ package org.deeplearning4j.rl4j.learning.async.a3c.discrete;
 import org.deeplearning4j.nn.gradient.Gradient;
 import org.deeplearning4j.rl4j.experience.StateActionPair;
 import org.deeplearning4j.rl4j.learning.Learning;
-import org.deeplearning4j.rl4j.learning.async.IAsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.UpdateAlgorithm;
 import org.deeplearning4j.rl4j.network.ac.IActorCritic;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -42,7 +41,6 @@ public class AdvantageActorCriticUpdateAlgorithm implements UpdateAlgorithm<IAct
                                                int actionSpaceSize,
                                                double gamma) {
 
-
         //if recurrent then train as a time serie with a batch size of 1
         this.recurrent = recurrent;
         this.shape = shape;
@@ -64,10 +62,9 @@ public class AdvantageActorCriticUpdateAlgorithm implements UpdateAlgorithm<IAct
 
         StateActionPair<Integer> stateActionPair = experience.get(size - 1);
         double value;
-        if(stateActionPair.isTerminal()) {
+        if (stateActionPair.isTerminal()) {
             value = 0;
-        }
-        else {
+        } else {
             INDArray[] output = current.outputAll(stateActionPair.getObservation().getData());
             value = output[0].getDouble(0);
         }
@@ -101,6 +98,6 @@ public class AdvantageActorCriticUpdateAlgorithm implements UpdateAlgorithm<IAct
 
         // targets -> value, critic
         // logSoftmax -> policy, actor
-        return current.gradient(input, new INDArray[] {targets, logSoftmax});
+        return current.gradient(input, new INDArray[]{targets, logSoftmax});
     }
 }

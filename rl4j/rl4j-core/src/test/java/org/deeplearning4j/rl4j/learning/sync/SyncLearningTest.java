@@ -1,8 +1,8 @@
 package org.deeplearning4j.rl4j.learning.sync;
 
 import org.deeplearning4j.rl4j.learning.ILearning;
+import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListener;
-import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import org.deeplearning4j.rl4j.learning.sync.support.MockStatEntry;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.space.ActionSpace;
@@ -32,7 +32,7 @@ public class SyncLearningTest {
     SyncLearning<Box, INDArray, ActionSpace<INDArray>, NeuralNet> syncLearning;
 
     @Mock
-    ILearning.LConfiguration mockLearningConfiguration;
+    ILearningConfiguration mockLearningConfiguration;
 
     @Before
     public void setup() {

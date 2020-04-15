@@ -91,7 +91,7 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
     public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf,
                              int epsilonNbStep, Random random) {
         this.configuration = conf;
-        this.mdp = new LegacyMDPWrapper<>(mdp, null, this);
+        this.mdp = new LegacyMDPWrapper<>(mdp, null);
         qNetwork = dqn;
         targetQNetwork = dqn.clone();
         policy = new DQNPolicy(getQNetwork());

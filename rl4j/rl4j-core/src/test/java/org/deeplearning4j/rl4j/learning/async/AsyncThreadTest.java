@@ -38,7 +38,7 @@ public class AsyncThreadTest {
     ObservationSpace<Box> mockObservationSpace;
 
     @Mock
-    AsyncConfiguration mockAsyncConfiguration;
+    IAsyncLearningConfiguration mockAsyncConfiguration;
 
     @Mock
     NeuralNet mockNeuralNet;
@@ -111,7 +111,7 @@ public class AsyncThreadTest {
         Observation mockObs = new Observation(Nd4j.zeros(observationShape));
 
         when(mockAsyncConfiguration.getMaxEpochStep()).thenReturn(episodeLength);
-        when(mockAsyncConfiguration.getNstep()).thenReturn(nstep);
+        when(mockAsyncConfiguration.getNStep()).thenReturn(nstep);
         when(thread.getConf()).thenReturn(mockAsyncConfiguration);
 
         // if we hit the max step count

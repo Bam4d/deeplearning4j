@@ -1,5 +1,4 @@
 /*******************************************************************************
- * Copyright (c) 2015-2019 Skymind, Inc.
  * Copyright (c) 2020 Konduit K.K.
  *
  * This program and the accompanying materials are made available under the
@@ -14,34 +13,14 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ******************************************************************************/
+package org.deeplearning4j.rl4j.learning.async;
 
-package org.deeplearning4j.rl4j.learning;
+import org.deeplearning4j.nn.gradient.Gradient;
+import org.deeplearning4j.rl4j.experience.StateActionPair;
+import org.deeplearning4j.rl4j.network.NeuralNet;
 
-import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
-import org.deeplearning4j.rl4j.mdp.MDP;
-import org.deeplearning4j.rl4j.policy.IPolicy;
-import org.deeplearning4j.rl4j.space.ActionSpace;
-import org.deeplearning4j.rl4j.space.Encodable;
+import java.util.List;
 
-/**
- * @author rubenfiszel (ruben.fiszel@epfl.ch) 7/19/16.
- *
- * A common interface that any training method should implement
- */
-public interface ILearning<O extends Encodable, A, AS extends ActionSpace<A>> {
-
-    IPolicy<O, A> getPolicy();
-
-    void train();
-
-    int getStepCount();
-
-    ILearningConfiguration getConfiguration();
-
-    MDP<O, A, AS> getMdp();
-
-    IHistoryProcessor getHistoryProcessor();
-
-
-
+public interface UpdateAlgorithm<NN extends NeuralNet> {
+    Gradient[] computeGradients(NN current, List<StateActionPair<Integer>> experience);
 }

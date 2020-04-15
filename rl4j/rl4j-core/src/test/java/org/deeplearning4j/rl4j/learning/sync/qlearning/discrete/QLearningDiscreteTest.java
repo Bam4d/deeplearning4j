@@ -21,6 +21,7 @@ import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.experience.ExperienceHandler;
 import org.deeplearning4j.rl4j.experience.StateActionPair;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
+import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.IExpReplay;
 import org.deeplearning4j.rl4j.learning.sync.Transition;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
@@ -79,7 +80,7 @@ public class QLearningDiscreteTest {
     IDQN mockDQN;
 
     @Mock
-    QLearning.QLConfiguration mockQlearningConfiguration;
+    QLearningConfiguration mockQlearningConfiguration;
 
     int[] observationShape = new int[]{3, 10, 10};
     int totalObservationSize = 1;
@@ -102,7 +103,7 @@ public class QLearningDiscreteTest {
         when(mockQlearningConfiguration.getBatchSize()).thenReturn(batchSize);
         when(mockQlearningConfiguration.getRewardFactor()).thenReturn(rewardFactor);
         when(mockQlearningConfiguration.getExpRepMaxSize()).thenReturn(maxExperienceReplay);
-        when(mockQlearningConfiguration.getSeed()).thenReturn(123);
+        when(mockQlearningConfiguration.getSeed()).thenReturn(123L);
 
         qLearningDiscrete = mock(
                 QLearningDiscrete.class,

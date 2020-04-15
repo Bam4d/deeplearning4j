@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.nn.gradient.Gradient;
+import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.nd4j.linalg.primitives.Pair;
 
@@ -61,7 +62,7 @@ public class AsyncGlobal<NN extends NeuralNet> implements IAsyncGlobal<NN> {
 
     private NN target;
 
-    final private AsyncConfiguration a3cc;
+    final private IAsyncLearningConfiguration configuration;
 
     @Getter
     private final Lock updateLock;
@@ -75,17 +76,17 @@ public class AsyncGlobal<NN extends NeuralNet> implements IAsyncGlobal<NN> {
     @Getter
     private int stepCount;
 
-    public AsyncGlobal(NN initial, AsyncConfiguration a3cc) {
+    public AsyncGlobal(NN initial, IAsyncLearningConfiguration configuration) {
         this.current = initial;
         target = (NN) initial.clone();
-        this.a3cc = a3cc;
+        this.configuration = configuration;
 
         // This is used to sync between
         updateLock = new ReentrantLock();
     }
 
     public boolean isTrainingComplete() {
-        return stepCount >= a3cc.getMaxStep();
+        return stepCount >= configuration.getMaxStep();
     }
 
     public void applyGradient(Gradient[] gradient, int nstep) {
@@ -102,8 +103,7 @@ public class AsyncGlobal<NN extends NeuralNet> implements IAsyncGlobal<NN> {
             stepCount += nstep;
             workerUpdateCount++;
 
-            //TODO: getTargetDqnUpdateFrequency is renamed as part of https://github.com/KonduitAI/deeplearning4j/pull/326 to getTargetUpdateFrequency
-            int targetUpdateFrequency = a3cc.getTargetDqnUpdateFreq();
+            int targetUpdateFrequency = configuration.getLearnerUpdateFrequency();
 
             // If we have a target update frequency, this means we only want to update the workers after a certain number of async updates
             // This can lead to more stable training

@@ -18,6 +18,7 @@ package org.deeplearning4j.rl4j.learning.async;
 
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
+import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
@@ -50,7 +51,7 @@ public class AsyncThreadDiscreteTest {
     AsyncThreadDiscrete<Encodable, NeuralNet> asyncThreadDiscrete;
 
     @Mock
-    AsyncConfiguration mockAsyncConfiguration;
+    IAsyncLearningConfiguration mockAsyncConfiguration;
 
     @Mock
     UpdateAlgorithm<NeuralNet> mockUpdateAlgorithm;

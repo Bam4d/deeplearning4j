@@ -18,7 +18,6 @@ package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
 import org.deeplearning4j.nn.gradient.Gradient;
 import org.deeplearning4j.rl4j.experience.StateActionPair;
 import org.deeplearning4j.rl4j.learning.Learning;
-import org.deeplearning4j.rl4j.learning.async.IAsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.UpdateAlgorithm;
 import org.deeplearning4j.rl4j.network.dqn.IDQN;
 import org.nd4j.linalg.api.ndarray.INDArray;
