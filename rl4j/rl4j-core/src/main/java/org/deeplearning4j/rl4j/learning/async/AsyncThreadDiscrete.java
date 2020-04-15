@@ -46,7 +46,7 @@ import java.util.Stack;
  * Async Learning specialized for the Discrete Domain
  */
 public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN extends NeuralNet>
-                extends AsyncThread<OBSERVATION, Integer, DiscreteSpace, NN> {
+        extends AsyncThread<OBSERVATION, Integer, DiscreteSpace, NN> {
 
     @Getter
     private NN current;
