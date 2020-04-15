@@ -35,12 +35,11 @@ import org.deeplearning4j.rl4j.space.DiscreteSpace;
 
 /**
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
- *
+ * <p>
  * Async Learning specialized for the Discrete Domain
- *
  */
 public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN extends NeuralNet>
-                extends AsyncThread<OBSERVATION, Integer, DiscreteSpace, NN> {
+        extends AsyncThread<OBSERVATION, Integer, DiscreteSpace, NN> {
 
     @Getter
     private NN current;
@@ -58,9 +57,7 @@ public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN exte
                                int threadNumber,
                                int deviceNum) {
         super(mdp, listeners, threadNumber, deviceNum);
-        synchronized (asyncGlobal) {
-            current = (NN)asyncGlobal.getCurrent().clone();
-        }
+        current = (NN) asyncGlobal.getTarget().clone();
     }
 
     // TODO: Add an actor-learner class and be able to inject the update algorithm
@@ -82,7 +79,7 @@ public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN exte
      * "Subepoch"  correspond to the t_max-step iterations
      * that stack rewards with t_max MiniTrans
      *
-     * @param sObs the obs to start from
+     * @param sObs  the obs to start from
      * @param nstep the number of max nstep (step until t_max or state is terminal)
      * @return subepoch training informations
      */

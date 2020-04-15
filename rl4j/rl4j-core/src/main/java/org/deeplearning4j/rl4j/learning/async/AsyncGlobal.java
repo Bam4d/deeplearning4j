@@ -59,8 +59,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class AsyncGlobal<NN extends NeuralNet> implements IAsyncGlobal<NN> {
 
-    @Getter
-    final private NN current;
+    private NN current;
 
     private NN target;
 
