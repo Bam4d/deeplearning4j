@@ -39,7 +39,7 @@ import org.nd4j.linalg.api.rng.Random;
 public class A3CThreadDiscrete<OBSERVATION extends Encodable> extends AsyncThreadDiscrete<OBSERVATION, IActorCritic> {
 
     @Getter
-    final protected A3CLearningConfiguration conf;
+    final protected A3CLearningConfiguration configuration;
     @Getter
     final protected IAsyncGlobal<IActorCritic> asyncGlobal;
     @Getter
@@ -51,11 +51,11 @@ public class A3CThreadDiscrete<OBSERVATION extends Encodable> extends AsyncThrea
                              A3CLearningConfiguration a3cc, int deviceNum, TrainingListenerList listeners,
                              int threadNumber) {
         super(asyncGlobal, mdp, listeners, threadNumber, deviceNum);
-        this.conf = a3cc;
+        this.configuration = a3cc;
         this.asyncGlobal = asyncGlobal;
         this.threadNumber = threadNumber;
 
-        Long seed = conf.getSeed();
+        Long seed = configuration.getSeed();
         rnd = Nd4j.getRandom();
         if (seed != null) {
             rnd.setSeed(seed + threadNumber);
@@ -75,6 +75,6 @@ public class A3CThreadDiscrete<OBSERVATION extends Encodable> extends AsyncThrea
     @Override
     protected UpdateAlgorithm<IActorCritic> buildUpdateAlgorithm() {
         int[] shape = getHistoryProcessor() == null ? getMdp().getObservationSpace().getShape() : getHistoryProcessor().getConf().getShape();
-        return new AdvantageActorCriticUpdateAlgorithm(asyncGlobal.getTarget().isRecurrent(), shape, getMdp().getActionSpace().getSize(), conf.getGamma());
+        return new AdvantageActorCriticUpdateAlgorithm(asyncGlobal.getTarget().isRecurrent(), shape, getMdp().getActionSpace().getSize(), configuration.getGamma());
     }
 }

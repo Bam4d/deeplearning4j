@@ -46,7 +46,7 @@ import java.util.Stack;
  * Async Learning specialized for the Discrete Domain
  */
 public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN extends NeuralNet>
-                extends AsyncThread<OBSERVATION, Integer, DiscreteSpace, NN> {
+        extends AsyncThread<OBSERVATION, Integer, DiscreteSpace, NN> {
 
     @Getter
     private NN current;
@@ -64,9 +64,7 @@ public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN exte
                                int threadNumber,
                                int deviceNum) {
         super(mdp, listeners, threadNumber, deviceNum);
-        synchronized (asyncGlobal) {
-            current = (NN) asyncGlobal.getTarget().clone();
-        }
+        current = (NN) asyncGlobal.getTarget().clone();
     }
 
     // TODO: Add an actor-learner class and be able to inject the update algorithm

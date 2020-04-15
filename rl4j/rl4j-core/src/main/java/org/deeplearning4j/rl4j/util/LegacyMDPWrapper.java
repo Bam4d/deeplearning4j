@@ -11,6 +11,7 @@ import org.datavec.image.transform.ShowImageTransform;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.mdp.MDP;
+import org.deeplearning4j.rl4j.observation.transform.EncodableToINDArrayTransform;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.observation.transform.TransformProcess;
@@ -92,6 +93,7 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
         }
         else {
             transformProcess = TransformProcess.builder()
+                    .transform("data", new EncodableToINDArrayTransform())
                     .build("data");
         }
     }
