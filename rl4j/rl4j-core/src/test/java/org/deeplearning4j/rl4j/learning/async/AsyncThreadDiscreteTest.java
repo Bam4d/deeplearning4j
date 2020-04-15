@@ -107,7 +107,6 @@ public class AsyncThreadDiscreteTest {
     }
 
     private void setupCurrentAndTargetMocks() {
-        when(mockAsyncGlobal.getCurrent()).thenReturn(mockGlobalCurrentNetwork);
         when(mockAsyncGlobal.getTarget()).thenReturn(mockGlobalTargetNetwork);
 
         when(mockGlobalCurrentNetwork.clone()).thenReturn(mockGlobalCurrentNetwork);

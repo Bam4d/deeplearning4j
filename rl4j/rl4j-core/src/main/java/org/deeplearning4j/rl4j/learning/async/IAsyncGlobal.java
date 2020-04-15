@@ -36,11 +36,6 @@ public interface IAsyncGlobal<NN extends NeuralNet> {
     int getStepCount();
 
     /**
-     * A copy of the global network that is updated after every worker episode.
-     */
-    NN getCurrent();
-
-    /**
      * A copy of the global network that is updated after a certain number of worker episodes.
      */
     NN getTarget();

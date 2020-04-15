@@ -65,7 +65,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
                                int deviceNum) {
         super(mdp, listeners, threadNumber, deviceNum);
         synchronized (asyncGlobal) {
-            current = (NN) asyncGlobal.getCurrent().clone();
+            current = (NN) asyncGlobal.getTarget().clone();
         }
     }
 

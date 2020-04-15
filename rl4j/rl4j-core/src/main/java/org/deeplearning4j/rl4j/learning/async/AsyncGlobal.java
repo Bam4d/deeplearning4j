@@ -57,7 +57,6 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class AsyncGlobal<NN extends NeuralNet> implements IAsyncGlobal<NN> {
 
-    @Getter
     final private NN current;
 
     private NN target;
@@ -108,7 +107,7 @@ public class AsyncGlobal<NN extends NeuralNet> implements IAsyncGlobal<NN> {
             // If we have a target update frequency, this means we only want to update the workers after a certain number of async updates
             // This can lead to more stable training
             if (targetUpdateFrequency != -1 && workerUpdateCount % targetUpdateFrequency == 0) {
-                log.info("Updating target network at {} episodes", workerUpdateCount);
+                log.info("Updating target network at updates={} steps={}", workerUpdateCount, stepCount);
             } else {
                 target.copy(current);
             }
