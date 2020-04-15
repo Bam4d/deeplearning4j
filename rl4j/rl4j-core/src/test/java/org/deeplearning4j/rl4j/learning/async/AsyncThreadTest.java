@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -102,26 +104,27 @@ public class AsyncThreadTest {
         mockTrainingContext(1000, 100, 10);
     }
 
-    private void mockTrainingContext(int maxSteps, int episodeLength, int nstep) {
+    private void mockTrainingContext(int maxSteps, int maxStepsPerEpisode, int nstep) {
 
         // Some conditions of this test harness
-        Preconditions.checkArgument(episodeLength >= nstep, "episodeLength must be greater than or equal to nstep");
-        Preconditions.checkArgument(episodeLength % nstep == 0, "episodeLength must be a multiple of nstep");
+        Preconditions.checkArgument(maxStepsPerEpisode >= nstep, "episodeLength must be greater than or equal to nstep");
+        Preconditions.checkArgument(maxStepsPerEpisode % nstep == 0, "episodeLength must be a multiple of nstep");
 
         Observation mockObs = new Observation(Nd4j.zeros(observationShape));
 
-        when(mockAsyncConfiguration.getMaxEpochStep()).thenReturn(episodeLength);
+        when(mockAsyncConfiguration.getMaxStepsPerEpisode()).thenReturn(maxStepsPerEpisode);
         when(mockAsyncConfiguration.getNStep()).thenReturn(nstep);
         when(thread.getConf()).thenReturn(mockAsyncConfiguration);
 
         // if we hit the max step count
         when(mockAsyncGlobal.isTrainingComplete()).thenAnswer(invocation -> thread.getStepCount() >= maxSteps);
 
-        when(thread.trainSubEpoch(any(Observation.class), anyInt())).thenAnswer((invocationOnMock) -> {
-            thread.stepCount += nstep;
-            thread.currentEpisodeStepCount += nstep;
-            boolean isEpisodeComplete = thread.getStepCount() % episodeLength == 0;
-            return new AsyncThread.SubEpochReturn(nstep, mockObs, 0.0, 0.0, isEpisodeComplete);
+        when(thread.trainSubEpoch(any(Observation.class), anyInt())).thenAnswer(invocationOnMock -> {
+            int steps = invocationOnMock.getArgument(1);
+            thread.stepCount += steps;
+            thread.currentEpisodeStepCount += steps;
+            boolean isEpisodeComplete = thread.getCurrentEpisodeStepCount() % maxStepsPerEpisode == 0;
+            return new AsyncThread.SubEpochReturn(steps, mockObs, 0.0, 0.0, isEpisodeComplete);
         });
     }
 
@@ -224,6 +227,35 @@ public class AsyncThreadTest {
 
         // There should be 20 calls to trainsubepoch with 5 steps per epoch
         verify(thread, times(20)).trainSubEpoch(any(Observation.class), eq(5));
+    }
+
+    @Test
+    public void when_remainingEpisodeLengthSmallerThanNSteps_expect_trainSubEpochCalledWithMinimumValue() {
+
+        int currentEpisodeSteps = 95;
+        mockTrainingContext(1000, 100, 10);
+        mockTrainingListeners(false, true);
+
+        // want to mock that we are 95 steps into the episode
+        doAnswer(invocationOnMock -> {
+            for (int i = 0; i < currentEpisodeSteps; i++) {
+                thread.incrementSteps();
+            }
+            return null;
+        }).when(thread).preEpisode();
+
+        mockTrainingListeners(false, true);
+
+        // Act
+        thread.run();
+
+        // Assert
+        assertEquals(1, thread.getEpochCount());
+        assertEquals(1, thread.getEpisodeCount());
+        assertEquals(100, thread.getStepCount());
+
+        // There should be 1 call to trainsubepoch with 5 steps as this is the remaining episode steps
+        verify(thread, times(1)).trainSubEpoch(any(Observation.class), eq(5));
     }
 
 }

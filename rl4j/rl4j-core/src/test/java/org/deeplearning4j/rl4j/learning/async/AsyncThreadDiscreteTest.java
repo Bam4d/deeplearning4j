@@ -60,9 +60,6 @@ public class AsyncThreadDiscreteTest {
     IAsyncGlobal<NeuralNet> mockAsyncGlobal;
 
     @Mock
-    NeuralNet mockGlobalCurrentNetwork;
-
-    @Mock
     Policy<Encodable, Integer> mockGlobalCurrentPolicy;
 
     @Mock
@@ -109,7 +106,7 @@ public class AsyncThreadDiscreteTest {
     private void setupCurrentAndTargetMocks() {
         when(mockAsyncGlobal.getTarget()).thenReturn(mockGlobalTargetNetwork);
 
-        when(mockGlobalCurrentNetwork.clone()).thenReturn(mockGlobalCurrentNetwork);
+        when(mockGlobalTargetNetwork.clone()).thenReturn(mockGlobalTargetNetwork);
     }
 
     @Before
@@ -127,7 +124,7 @@ public class AsyncThreadDiscreteTest {
         when(asyncThreadDiscrete.getConf()).thenReturn(mockAsyncConfiguration);
         when(mockAsyncConfiguration.getRewardFactor()).thenReturn(1.0);
         when(asyncThreadDiscrete.getAsyncGlobal()).thenReturn(mockAsyncGlobal);
-        when(asyncThreadDiscrete.getPolicy(eq(mockGlobalCurrentNetwork))).thenReturn(mockGlobalCurrentPolicy);
+        when(asyncThreadDiscrete.getPolicy(eq(mockGlobalTargetNetwork))).thenReturn(mockGlobalCurrentPolicy);
 
         when(mockGlobalCurrentPolicy.nextAction(eq(mockObservation))).thenReturn(0);
 
@@ -136,31 +133,11 @@ public class AsyncThreadDiscreteTest {
     }
 
     @Test
-    public void when_episodeShorterThanNsteps_returnEpisodeLength() {
-
-        // Arrange
-        int episodeRemaining = 4;
-        int nSteps = 5;
-
-        // return done after 4 steps (the episode finishes before nsteps)
-        when(mockMDP.isDone()).thenAnswer(invocation ->
-            asyncThreadDiscrete.getStepCount() == episodeRemaining
-        );
-
-        // Act
-        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, nSteps);
-
-        // Assert
-        assertTrue(subEpochReturn.isEpisodeComplete());
-        assertEquals(episodeRemaining, subEpochReturn.getSteps());
-    }
-
-    @Test
-    public void when_episodeLongerThanNsteps_returnNstepLength() {
+    public void when_episodeCompletes_expect_stepsToBeInLineWithEpisodeLenth() {
 
         // Arrange
         int episodeRemaining = 5;
-        int nSteps = 4;
+        int remainingTrainingSteps = 10;
 
         // return done after 4 steps (the episode finishes before nsteps)
         when(mockMDP.isDone()).thenAnswer(invocation ->
@@ -168,11 +145,51 @@ public class AsyncThreadDiscreteTest {
         );
 
         // Act
-        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, nSteps);
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
+
+        // Assert
+        assertTrue(subEpochReturn.isEpisodeComplete());
+        assertEquals(5, subEpochReturn.getSteps());
+    }
+
+    @Test
+    public void when_episodeCompletesDueToMaxStepsReached_expect_isEpisodeComplete() {
+
+        // Arrange
+        int remainingTrainingSteps = 50;
+
+        // Episode does not complete due to MDP
+        when(mockMDP.isDone()).thenReturn(false);
+
+        when(mockAsyncConfiguration.getMaxStepsPerEpisode()).thenReturn(50);
+
+        // Act
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
+
+        // Assert
+        assertTrue(subEpochReturn.isEpisodeComplete());
+        assertEquals(50, subEpochReturn.getSteps());
+
+    }
+
+    @Test
+    public void when_episodeLongerThanNsteps_expect_returnNStepLength() {
+
+        // Arrange
+        int episodeRemaining = 5;
+        int remainingTrainingSteps = 4;
+
+        // return done after 4 steps (the episode finishes before nsteps)
+        when(mockMDP.isDone()).thenAnswer(invocation ->
+                asyncThreadDiscrete.getStepCount() == episodeRemaining
+        );
+
+        // Act
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
 
         // Assert
         assertFalse(subEpochReturn.isEpisodeComplete());
-        assertEquals(nSteps, subEpochReturn.getSteps());
+        assertEquals(remainingTrainingSteps, subEpochReturn.getSteps());
     }
 
 }

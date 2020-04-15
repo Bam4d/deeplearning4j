@@ -36,7 +36,7 @@ public class LearningConfiguration implements ILearningConfiguration {
      * The maximum number of steps in each episode
      */
     @Builder.Default
-    private int maxEpochStep = 200;
+    private int maxStepsPerEpisode = 200;
 
     /**
      * The maximum number of steps to train for
@@ -56,4 +56,8 @@ public class LearningConfiguration implements ILearningConfiguration {
     @Builder.Default
     private double rewardFactor = 1.0;
 
+    @Override
+    public int getMaxEpochStep() {
+        return maxStepsPerEpisode;
+    }
 }

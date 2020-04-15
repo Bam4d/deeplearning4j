@@ -19,7 +19,10 @@ package org.deeplearning4j.rl4j.learning.configuration;
 public interface ILearningConfiguration {
     Long getSeed();
 
+    @Deprecated
     int getMaxEpochStep();
+
+    int getMaxStepsPerEpisode();
 
     int getMaxStep();
 

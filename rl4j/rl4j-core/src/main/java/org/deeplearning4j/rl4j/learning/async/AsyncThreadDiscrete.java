@@ -89,10 +89,10 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
      * that stack rewards with t_max MiniTrans
      *
      * @param sObs  the obs to start from
-     * @param nstep the number of max nstep (step until t_max or state is terminal)
+     * @param trainingSteps the number of training steps
      * @return subepoch training informations
      */
-    public SubEpochReturn trainSubEpoch(Observation sObs, int nstep) {
+    public SubEpochReturn trainSubEpoch(Observation sObs, int trainingSteps) {
 
         current.copy(getAsyncGlobal().getTarget());
 
@@ -106,7 +106,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         double reward = 0;
         double accuReward = 0;
 
-        while (!getMdp().isDone() && !hasCollectedNSteps(experienceHandler, nstep, skipFrame)) {
+        while (!getMdp().isDone() && experienceHandler.getTrainingBatchSize() != trainingSteps) {
 
             //if step of training, just repeat lastAction
             if (!obs.isSkipped()) {
@@ -119,18 +119,18 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
             if (!obs.isSkipped()) {
                 experienceHandler.addExperience(obs, action, accuReward, stepReply.isDone());
                 accuReward = 0;
+
+                incrementSteps();
             }
 
             obs = stepReply.getObservation();
             reward += stepReply.getReward();
 
-            incrementSteps();
-
         }
 
-        boolean episodeComplete = getMdp().isDone();
+        boolean episodeComplete = getMdp().isDone() || getConf().getMaxStepsPerEpisode() == currentEpisodeStepCount;
 
-        if (episodeComplete && hasCollectedNSteps(experienceHandler, nstep, skipFrame)) {
+        if (episodeComplete && experienceHandler.getTrainingBatchSize() != trainingSteps) {
             experienceHandler.setFinalObservation(obs);
         }
 
@@ -143,9 +143,4 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         return new SubEpochReturn(experienceSize, obs, reward, current.getLatestScore(), episodeComplete);
     }
 
-    private boolean hasCollectedNSteps(ExperienceHandler experienceHandler, int nSteps, int skipFrames) {
-        int experienceSize = experienceHandler.getTrainingBatchSize();
-        int updateFrequency = nSteps * skipFrames;
-        return experienceSize > 0 && experienceSize % updateFrequency == 0;
-    }
 }
