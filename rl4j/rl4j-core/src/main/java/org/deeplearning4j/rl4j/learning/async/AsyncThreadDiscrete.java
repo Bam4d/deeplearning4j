@@ -101,7 +101,6 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
 
         Integer action = getMdp().getActionSpace().noOp();
         IHistoryProcessor hp = getHistoryProcessor();
-        int skipFrame = hp != null ? hp.getConf().getSkipFrame() : 1;
 
         double reward = 0;
         double accuReward = 0;

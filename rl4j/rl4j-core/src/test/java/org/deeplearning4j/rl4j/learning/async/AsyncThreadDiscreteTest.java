@@ -17,14 +17,12 @@
 package org.deeplearning4j.rl4j.learning.async;
 
 import org.deeplearning4j.gym.StepReply;
-import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.configuration.IAsyncLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListenerList;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.observation.Observation;
 import org.deeplearning4j.rl4j.policy.Policy;
-import org.deeplearning4j.rl4j.space.Box;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
@@ -35,11 +33,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.nd4j.linalg.factory.Nd4j;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -88,24 +90,16 @@ public class AsyncThreadDiscreteTest {
 
     private void setupMDPMocks() {
 
-        when(mockObservationSpace.getShape()).thenReturn(observationShape);
         when(mockActionSpace.noOp()).thenReturn(0);
-
-        when(mockMDP.getObservationSpace()).thenReturn(mockObservationSpace);
         when(mockMDP.getActionSpace()).thenReturn(mockActionSpace);
 
-        int dataLength = 1;
-        for (int d : observationShape) {
-            dataLength *= d;
-        }
-
-        //when(mockMDP.reset()).thenReturn(new Box(new double[dataLength]));
+        when(mockObservationSpace.getShape()).thenReturn(observationShape);
+        when(mockMDP.getObservationSpace()).thenReturn(mockObservationSpace);
 
     }
 
-    private void setupCurrentAndTargetMocks() {
+    private void setupNNMocks() {
         when(mockAsyncGlobal.getTarget()).thenReturn(mockGlobalTargetNetwork);
-
         when(mockGlobalTargetNetwork.clone()).thenReturn(mockGlobalTargetNetwork);
     }
 
@@ -113,7 +107,7 @@ public class AsyncThreadDiscreteTest {
     public void setup() {
 
         setupMDPMocks();
-        setupCurrentAndTargetMocks();
+        setupNNMocks();
 
         asyncThreadDiscrete = mock(AsyncThreadDiscrete.class, Mockito.withSettings()
                 .useConstructor(mockAsyncGlobal, mockMDP, mockTrainingListenerList, 0, 0)
@@ -126,10 +120,10 @@ public class AsyncThreadDiscreteTest {
         when(asyncThreadDiscrete.getAsyncGlobal()).thenReturn(mockAsyncGlobal);
         when(asyncThreadDiscrete.getPolicy(eq(mockGlobalTargetNetwork))).thenReturn(mockGlobalCurrentPolicy);
 
-        when(mockGlobalCurrentPolicy.nextAction(eq(mockObservation))).thenReturn(0);
+        when(mockGlobalCurrentPolicy.nextAction(any(Observation.class))).thenReturn(0);
 
         when(asyncThreadDiscrete.getLegacyMDPWrapper()).thenReturn(mockLegacyMDPWrapper);
-        when(mockLegacyMDPWrapper.step(0)).thenReturn(new StepReply<>(mockObservation, 0.0, false, null));
+
     }
 
     @Test
@@ -143,6 +137,8 @@ public class AsyncThreadDiscreteTest {
         when(mockMDP.isDone()).thenAnswer(invocation ->
                 asyncThreadDiscrete.getStepCount() == episodeRemaining
         );
+
+        when(mockLegacyMDPWrapper.step(0)).thenReturn(new StepReply<>(mockObservation, 0.0, false, null));
 
         // Act
         AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
@@ -160,6 +156,8 @@ public class AsyncThreadDiscreteTest {
 
         // Episode does not complete due to MDP
         when(mockMDP.isDone()).thenReturn(false);
+
+        when(mockLegacyMDPWrapper.step(0)).thenReturn(new StepReply<>(mockObservation, 0.0, false, null));
 
         when(mockAsyncConfiguration.getMaxStepsPerEpisode()).thenReturn(50);
 
@@ -184,12 +182,43 @@ public class AsyncThreadDiscreteTest {
                 asyncThreadDiscrete.getStepCount() == episodeRemaining
         );
 
+        when(mockLegacyMDPWrapper.step(0)).thenReturn(new StepReply<>(mockObservation, 0.0, false, null));
+
         // Act
         AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
 
         // Assert
         assertFalse(subEpochReturn.isEpisodeComplete());
         assertEquals(remainingTrainingSteps, subEpochReturn.getSteps());
+    }
+
+    @Test
+    public void when_framesAreSkipped_expect_proportionateStepCounterUpdates() {
+        int skipFrames = 2;
+        int remainingTrainingSteps = 10;
+
+        // Episode does not complete due to MDP
+        when(mockMDP.isDone()).thenReturn(false);
+
+        AtomicInteger stepCount = new AtomicInteger();
+
+        // Use skipFrames to return if observations are skipped or not
+        when(mockLegacyMDPWrapper.step(anyInt())).thenAnswer(invocationOnMock -> {
+
+            boolean isSkipped = stepCount.incrementAndGet() % skipFrames != 0;
+
+            Observation mockObs = new Observation(isSkipped ? null : Nd4j.create(observationShape));
+            return new StepReply<>(mockObs, 0.0, false, null);
+        });
+
+
+        // Act
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
+
+        // Assert
+        assertFalse(subEpochReturn.isEpisodeComplete());
+        assertEquals(remainingTrainingSteps, subEpochReturn.getSteps());
+        assertEquals((remainingTrainingSteps-1)*skipFrames + 1, stepCount.get());
     }
 
 }
