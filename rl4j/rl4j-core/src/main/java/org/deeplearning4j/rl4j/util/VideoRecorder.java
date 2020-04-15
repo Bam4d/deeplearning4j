@@ -52,7 +52,7 @@ import static org.bytedeco.ffmpeg.global.avutil.AV_PIX_FMT_RGB8;
 @Slf4j
 public class VideoRecorder implements AutoCloseable {
 
-    private final static NativeImageLoader nativeImageLoader = new NativeImageLoader();
+    private final NativeImageLoader nativeImageLoader = new NativeImageLoader();
 
     private final int height;
     private final int width;
