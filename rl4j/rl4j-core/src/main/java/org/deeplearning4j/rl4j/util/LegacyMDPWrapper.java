@@ -78,13 +78,10 @@ public class LegacyMDPWrapper<OBSERVATION extends Encodable, A, AS extends Actio
                     .filter(new UniformSkippingFilter(skipFrame))
                     .transform("data", new EncodableToImageWritableTransform())
                     .transform("data", new MultiImageTransform(
-                            new ShowImageTransform("original"),
                             new CropImageTransform(historyProcessor.getConf().getOffsetY(), historyProcessor.getConf().getOffsetX(), cropBottom, cropRight),
-                            new ShowImageTransform("crop"),
                             new ResizeImageTransform(historyProcessor.getConf().getRescaledWidth(), historyProcessor.getConf().getRescaledHeight()),
-                            new ShowImageTransform("crop + resize"),
-                            new ColorConversionTransform(COLOR_BGR2GRAY),
-                            new ShowImageTransform("crop + resize + greyscale")
+                            new ColorConversionTransform(COLOR_BGR2GRAY)
+//                          new ShowImageTransform("crop + resize + greyscale")
                     ))
                     .transform("data", new ImageWritableToINDArrayTransform())
                     .transform("data", new SimpleNormalizationTransform(0.0, 255.0))
