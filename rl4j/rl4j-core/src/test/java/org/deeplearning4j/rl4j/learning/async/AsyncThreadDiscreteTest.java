@@ -218,7 +218,28 @@ public class AsyncThreadDiscreteTest {
         // Assert
         assertFalse(subEpochReturn.isEpisodeComplete());
         assertEquals(remainingTrainingSteps, subEpochReturn.getSteps());
-        assertEquals((remainingTrainingSteps-1)*skipFrames + 1, stepCount.get());
+        assertEquals((remainingTrainingSteps - 1) * skipFrames + 1, stepCount.get());
+    }
+
+    @Test
+    public void when_preEpisodeCalled_expect_experienceHandlerReset() {
+
+        // Arrange
+        int trainingSteps = 100;
+        for (int i = 0; i < trainingSteps; i++) {
+            asyncThreadDiscrete.getExperienceHandler().addExperience(mockObservation, 0, 0.0, false);
+        }
+
+        int experienceHandlerSizeBeforeReset = asyncThreadDiscrete.getExperienceHandler().getTrainingBatchSize();
+
+        // Act
+        asyncThreadDiscrete.preEpisode();
+
+        // Assert
+        assertEquals(100, experienceHandlerSizeBeforeReset);
+        assertEquals(0, asyncThreadDiscrete.getExperienceHandler().getTrainingBatchSize());
+
+
     }
 
 }

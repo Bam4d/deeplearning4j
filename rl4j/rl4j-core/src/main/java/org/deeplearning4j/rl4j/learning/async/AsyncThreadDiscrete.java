@@ -55,7 +55,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
     private UpdateAlgorithm<NN> updateAlgorithm;
 
     // TODO: Make it configurable with a builder
-    @Setter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED) @Getter
     private ExperienceHandler experienceHandler = new StateActionExperienceHandler();
 
     public AsyncThreadDiscrete(IAsyncGlobal<NN> asyncGlobal,
@@ -100,7 +100,6 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         IPolicy<O, Integer> policy = getPolicy(current);
 
         Integer action = getMdp().getActionSpace().noOp();
-        IHistoryProcessor hp = getHistoryProcessor();
 
         double reward = 0;
         double accuReward = 0;
@@ -136,8 +135,6 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         int experienceSize = experienceHandler.getTrainingBatchSize();
 
         getAsyncGlobal().applyGradient(updateAlgorithm.computeGradients(current, experienceHandler.generateTrainingBatch()), experienceSize);
-
-        experienceHandler.reset();
 
         return new SubEpochReturn(experienceSize, obs, reward, current.getLatestScore(), episodeComplete);
     }
