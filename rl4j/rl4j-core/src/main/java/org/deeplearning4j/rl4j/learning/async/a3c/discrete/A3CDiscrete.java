@@ -98,7 +98,7 @@ public abstract class A3CDiscrete<O extends Encodable> extends AsyncLearning<O, 
         public A3CLearningConfiguration toLearningConfiguration() {
             return A3CLearningConfiguration.builder()
                     .seed(new Long(seed))
-                    .maxStepsPerEpisode(maxEpochStep)
+                    .maxEpochStep(maxEpochStep)
                     .maxStep(maxStep)
                     .numThreads(numThread)
                     .nStep(nstep)

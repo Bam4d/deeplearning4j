@@ -88,7 +88,7 @@ public abstract class AsyncNStepQLearningDiscrete<O extends Encodable>
         public AsyncQLearningConfiguration toLearningConfiguration() {
             return AsyncQLearningConfiguration.builder()
                     .seed(new Long(seed))
-                    .maxStepsPerEpisode(maxEpochStep)
+                    .maxEpochStep(maxEpochStep)
                     .maxStep(maxStep)
                     .numThreads(numThread)
                     .nStep(nstep)

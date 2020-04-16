@@ -100,7 +100,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         double meanQ = 0;
         int numQ = 0;
         List<Double> scores = new ArrayList<>();
-        while (currentEpisodeStepCount < getConfiguration().getMaxStepsPerEpisode() && !getMdp().isDone()) {
+        while (currentEpisodeStepCount < getConfiguration().getMaxEpochStep() && !getMdp().isDone()) {
 
             if (this.getStepCount() % getConfiguration().getTargetDqnUpdateFreq() == 0) {
                 updateTargetNetwork();
@@ -226,7 +226,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
 
             return QLearningConfiguration.builder()
                     .seed(seed.longValue())
-                    .maxStepsPerEpisode(maxEpochStep)
+                    .maxEpochStep(maxEpochStep)
                     .maxStep(maxStep)
                     .expRepMaxSize(expRepMaxSize)
                     .batchSize(batchSize)

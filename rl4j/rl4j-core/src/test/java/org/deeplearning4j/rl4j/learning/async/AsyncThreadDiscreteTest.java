@@ -159,7 +159,7 @@ public class AsyncThreadDiscreteTest {
 
         when(mockLegacyMDPWrapper.step(0)).thenReturn(new StepReply<>(mockObservation, 0.0, false, null));
 
-        when(mockAsyncConfiguration.getMaxStepsPerEpisode()).thenReturn(50);
+        when(mockAsyncConfiguration.getMaxEpochStep()).thenReturn(50);
 
         // Act
         AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);

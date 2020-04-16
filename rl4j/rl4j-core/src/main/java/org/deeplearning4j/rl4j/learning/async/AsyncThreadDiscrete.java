@@ -126,7 +126,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
 
         }
 
-        boolean episodeComplete = getMdp().isDone() || getConf().getMaxStepsPerEpisode() == currentEpisodeStepCount;
+        boolean episodeComplete = getMdp().isDone() || getConf().getMaxEpochStep() == currentEpisodeStepCount;
 
         if (episodeComplete && experienceHandler.getTrainingBatchSize() != trainingSteps) {
             experienceHandler.setFinalObservation(obs);

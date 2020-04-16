@@ -189,7 +189,7 @@ public class PolicyTest {
 
         QLearningConfiguration conf = QLearningConfiguration.builder()
                 .seed(0L)
-                .maxStepsPerEpisode(0)
+                .maxEpochStep(0)
                 .maxStep(0)
                 .expRepMaxSize(5)
                 .batchSize(1)

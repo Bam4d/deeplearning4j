@@ -188,7 +188,7 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
     }
 
     private boolean handleTraining(RunContext context) {
-        int maxTrainSteps = Math.min(getConf().getNStep(), getConf().getMaxStepsPerEpisode() - currentEpisodeStepCount);
+        int maxTrainSteps = Math.min(getConf().getNStep(), getConf().getMaxEpochStep() - currentEpisodeStepCount);
         SubEpochReturn subEpochReturn = trainSubEpoch(context.obs, maxTrainSteps);
 
         context.obs = subEpochReturn.getLastObs();

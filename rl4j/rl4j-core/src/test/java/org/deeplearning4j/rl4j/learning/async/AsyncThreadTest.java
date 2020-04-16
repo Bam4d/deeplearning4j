@@ -112,7 +112,7 @@ public class AsyncThreadTest {
 
         Observation mockObs = new Observation(Nd4j.zeros(observationShape));
 
-        when(mockAsyncConfiguration.getMaxStepsPerEpisode()).thenReturn(maxStepsPerEpisode);
+        when(mockAsyncConfiguration.getMaxEpochStep()).thenReturn(maxStepsPerEpisode);
         when(mockAsyncConfiguration.getNStep()).thenReturn(nstep);
         when(thread.getConf()).thenReturn(mockAsyncConfiguration);
 
