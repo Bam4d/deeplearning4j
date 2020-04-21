@@ -80,7 +80,7 @@ public class ALEMDP implements MDP<ALEMDP.GameScreen, Integer, DiscreteSpace> {
         int width = (int)(int)ale.getScreen().width();
 
         discreteSpace = new DiscreteSpace(actions.length);
-        int[] shape = {height, width, 3};
+        int[] shape = {3, height, width};
         observationSpace = new ArrayObservationSpace<>(shape);
         screenBuffer = new byte[shape[0] * shape[1] * shape[2]];
 
@@ -155,12 +155,7 @@ public class ALEMDP implements MDP<ALEMDP.GameScreen, Integer, DiscreteSpace> {
         final INDArray data;
         public GameScreen(int[] shape, byte[] screen) {
 
-            long[] lshape = new long[shape.length];
-            for(int i = 0; i<shape.length; i++) {
-                lshape[i] = shape[i];
-            }
-
-            data = Nd4j.create(screen, lshape, DataType.UINT8).permute(2,0,1);
+            data = Nd4j.create(screen, new long[] {shape[1], shape[2], 3}, DataType.UINT8).permute(2,0,1);
         }
 
         private GameScreen(INDArray toDup) {

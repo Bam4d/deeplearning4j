@@ -62,7 +62,7 @@ public class HistoryProcessor implements IHistoryProcessor {
 
     public void startMonitor(String filename, int[] shape) {
         if(videoRecorder == null) {
-            videoRecorder = VideoRecorder.builder(shape[0], shape[1])
+            videoRecorder = VideoRecorder.builder(shape[1], shape[2])
                     .build();
         }
 

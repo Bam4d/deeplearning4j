@@ -37,7 +37,6 @@ import static org.bytedeco.opencv.global.opencv_core.CV_8UC3;
 public class EncodableToImageWritableTransform implements Operation<Encodable, ImageWritable> {
 
     final static NativeImageLoader nativeImageLoader = new NativeImageLoader();
-    private final OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
 
     @Override
     public ImageWritable transform(Encodable encodable) {

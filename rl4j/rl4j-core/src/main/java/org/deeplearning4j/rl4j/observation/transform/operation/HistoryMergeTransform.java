@@ -57,6 +57,7 @@ public class HistoryMergeTransform implements Operation<INDArray, INDArray>, Res
 
     @Override
     public INDArray transform(INDArray input) {
+
         INDArray element;
         if(isFirstDimensionBatch) {
             element = input.slice(0, 0);

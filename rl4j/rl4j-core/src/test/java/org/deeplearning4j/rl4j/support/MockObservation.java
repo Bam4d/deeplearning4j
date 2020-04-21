@@ -26,7 +26,7 @@ public class MockObservation implements Encodable {
     final INDArray data;
 
     public MockObservation(int value) {
-        this.data = Nd4j.create(value);
+        this.data = Nd4j.ones(1).mul(value);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.deeplearning4j.rl4j.support;
 
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
+import org.deeplearning4j.rl4j.observation.transform.EncodableToINDArrayTransform;
 import org.deeplearning4j.rl4j.observation.transform.TransformProcess;
 import org.deeplearning4j.rl4j.observation.transform.filter.UniformSkippingFilter;
 import org.deeplearning4j.rl4j.observation.transform.legacy.EncodableToImageWritableTransform;
@@ -87,7 +88,7 @@ public class MockMDP implements MDP<MockObservation, Integer, DiscreteSpace> {
     public static TransformProcess buildTransformProcess(int skipFrame, int historyLength) {
         return TransformProcess.builder()
                 .filter(new UniformSkippingFilter(skipFrame))
-                .transform("data", new EncodableToImageWritableTransform())
+                .transform("data", new EncodableToINDArrayTransform())
                 .transform("data", new SimpleNormalizationTransform(0.0, 255.0))
                 .transform("data", HistoryMergeTransform.builder()
                         .elementStore(new CircularFifoStore(historyLength))
