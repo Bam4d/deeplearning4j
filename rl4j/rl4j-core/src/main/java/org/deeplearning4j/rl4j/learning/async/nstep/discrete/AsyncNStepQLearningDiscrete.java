@@ -63,7 +63,7 @@ public abstract class AsyncNStepQLearningDiscrete<OBSERVATION extends Encodable>
     }
 
     public IPolicy<Integer> getPolicy() {
-        return new DQNPolicy<O>(getNeuralNet());
+        return new DQNPolicy<OBSERVATION>(getNeuralNet());
     }
 
     @Data
