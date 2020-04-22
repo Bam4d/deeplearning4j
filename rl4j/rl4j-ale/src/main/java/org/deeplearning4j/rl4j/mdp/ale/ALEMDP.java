@@ -53,8 +53,6 @@ public class ALEMDP implements MDP<ALEMDP.GameScreen, Integer, DiscreteSpace> {
 
     private byte[] screenBuffer;
 
-    int height, width;
-
     public ALEMDP(String romFile) {
         this(romFile, false);
     }

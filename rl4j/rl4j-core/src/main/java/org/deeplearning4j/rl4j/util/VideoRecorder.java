@@ -41,7 +41,7 @@ import static org.bytedeco.ffmpeg.global.avutil.AV_PIX_FMT_RGB8;
  *         recorder.startRecording("myVideo.mp4");
  *         while(...) {
  *             INDArray chwData = Nd4j.create()
- *             recorder.record(frame);
+ *             recorder.record(chwData);
  *         }
  *         recorder.stopRecording();
  * }
@@ -87,7 +87,6 @@ public class VideoRecorder implements AutoCloseable {
 
         fmpegFrameRecorder = new FFmpegFrameRecorder(filename, width, height);
         fmpegFrameRecorder.setVideoCodec(codec);
-        //fmpegFrameRecorder.setPixelFormat(AV_PIX_FMT_RGB8);
         fmpegFrameRecorder.setFrameRate(framerate);
         fmpegFrameRecorder.setVideoQuality(videoQuality);
         fmpegFrameRecorder.start();
