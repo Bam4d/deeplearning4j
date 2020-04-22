@@ -62,8 +62,8 @@ public abstract class AsyncNStepQLearningDiscrete<OBSERVATION extends Encodable>
         return asyncGlobal.getTarget();
     }
 
-    public IPolicy<OBSERVATION, Integer> getPolicy() {
-        return new DQNPolicy<>(getNeuralNet());
+    public IPolicy<Integer> getPolicy() {
+        return new DQNPolicy<O>(getNeuralNet());
     }
 
     @Data

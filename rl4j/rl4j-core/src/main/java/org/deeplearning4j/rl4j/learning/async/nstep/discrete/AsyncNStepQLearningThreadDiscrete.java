@@ -64,7 +64,7 @@ public class AsyncNStepQLearningThreadDiscrete<OBSERVATION extends Encodable> ex
         setUpdateAlgorithm(buildUpdateAlgorithm());
     }
 
-    public Policy<OBSERVATION, Integer> getPolicy(IDQN nn) {
+    public Policy<Integer> getPolicy(IDQN nn) {
         return new EpsGreedy(new DQNPolicy(nn), getMdp(), configuration.getUpdateStart(), configuration.getEpsilonNbStep(),
                 rnd, configuration.getMinEpsilon(), this);
     }

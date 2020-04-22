@@ -90,7 +90,7 @@ public abstract class AsyncThreadDiscrete<OBSERVATION extends Encodable, NN exte
         current.copy(getAsyncGlobal().getTarget());
 
         Observation obs = sObs;
-        IPolicy<OBSERVATION, Integer> policy = getPolicy(current);
+        IPolicy<Integer> policy = getPolicy(current);
 
         Integer action = getMdp().getActionSpace().noOp();
 

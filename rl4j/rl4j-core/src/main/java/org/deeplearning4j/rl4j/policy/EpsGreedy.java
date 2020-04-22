@@ -40,9 +40,9 @@ import org.nd4j.linalg.api.rng.Random;
  */
 @AllArgsConstructor
 @Slf4j
-public class EpsGreedy<OBSERVATION extends Encodable, A, AS extends ActionSpace<A>> extends Policy<OBSERVATION, A> {
+public class EpsGreedy<OBSERVATION extends Encodable, A, AS extends ActionSpace<A>> extends Policy<A> {
 
-    final private Policy<OBSERVATION, A> policy;
+    final private Policy<A> policy;
     final private MDP<OBSERVATION, A, AS> mdp;
     final private int updateStart;
     final private int epsilonNbStep;
