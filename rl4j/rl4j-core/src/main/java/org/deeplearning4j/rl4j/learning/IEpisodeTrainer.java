@@ -29,9 +29,9 @@ import org.deeplearning4j.rl4j.mdp.MDP;
  * @author Alexandre Boulanger
  * @author rubenfiszel (ruben.fiszel@epfl.ch) on 8/5/16.
  */
-public interface IEpochTrainer {
+public interface IEpisodeTrainer {
     int getStepCount();
-    int getEpochCount();
+    int getTrainingIterations();
     int getEpisodeCount();
     int getCurrentEpisodeStepCount();
     IHistoryProcessor getHistoryProcessor();

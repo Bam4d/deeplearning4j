@@ -141,7 +141,7 @@ public class AsyncThreadDiscreteTest {
         when(mockLegacyMDPWrapper.step(0)).thenReturn(new StepReply<>(mockObservation, 0.0, false, null));
 
         // Act
-        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainNSteps(mockObservation, remainingTrainingSteps);
 
         // Assert
         assertTrue(subEpochReturn.isEpisodeComplete());
@@ -162,7 +162,7 @@ public class AsyncThreadDiscreteTest {
         when(mockAsyncConfiguration.getMaxEpochStep()).thenReturn(50);
 
         // Act
-        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainNSteps(mockObservation, remainingTrainingSteps);
 
         // Assert
         assertTrue(subEpochReturn.isEpisodeComplete());
@@ -185,7 +185,7 @@ public class AsyncThreadDiscreteTest {
         when(mockLegacyMDPWrapper.step(0)).thenReturn(new StepReply<>(mockObservation, 0.0, false, null));
 
         // Act
-        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainNSteps(mockObservation, remainingTrainingSteps);
 
         // Assert
         assertFalse(subEpochReturn.isEpisodeComplete());
@@ -213,7 +213,7 @@ public class AsyncThreadDiscreteTest {
 
 
         // Act
-        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainSubEpoch(mockObservation, remainingTrainingSteps);
+        AsyncThread.SubEpochReturn subEpochReturn = asyncThreadDiscrete.trainNSteps(mockObservation, remainingTrainingSteps);
 
         // Assert
         assertFalse(subEpochReturn.isEpisodeComplete());

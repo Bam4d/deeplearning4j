@@ -1,7 +1,7 @@
 package org.deeplearning4j.rl4j.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.learning.async.AsyncThread;
@@ -32,7 +32,7 @@ public class DataManagerTrainingListener implements TrainingListener {
     }
 
     @Override
-    public ListenerResponse onNewEpoch(IEpochTrainer trainer) {
+    public ListenerResponse onNewEpoch(IEpisodeTrainer trainer) {
         IHistoryProcessor hp = trainer.getHistoryProcessor();
         if(hp != null) {
             int[] shape = trainer.getMdp().getObservationSpace().getShape();
@@ -40,7 +40,7 @@ public class DataManagerTrainingListener implements TrainingListener {
             if (trainer instanceof AsyncThread) {
                 filename += ((AsyncThread) trainer).getThreadNumber() + "-";
             }
-            filename += trainer.getEpochCount() + "-" + trainer.getStepCount() + ".mp4";
+            filename += trainer.getTrainingIterations() + "-" + trainer.getStepCount() + ".mp4";
             hp.startMonitor(filename, shape);
         }
 
@@ -48,7 +48,7 @@ public class DataManagerTrainingListener implements TrainingListener {
     }
 
     @Override
-    public ListenerResponse onEpochTrainingResult(IEpochTrainer trainer, IDataManager.StatEntry statEntry) {
+    public ListenerResponse onEpochTrainingResult(IEpisodeTrainer trainer, IDataManager.StatEntry statEntry) {
         IHistoryProcessor hp = trainer.getHistoryProcessor();
         if(hp != null) {
             hp.stopMonitor();

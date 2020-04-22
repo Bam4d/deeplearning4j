@@ -39,7 +39,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -112,8 +111,8 @@ public class AsyncThreadTest {
     }
 
     private void mockTrainingListeners(boolean stopOnNotifyNewEpoch, boolean stopOnNotifyEpochTrainingResult) {
-        when(mockTrainingListeners.notifyNewEpoch(eq(thread))).thenReturn(!stopOnNotifyNewEpoch);
-        when(mockTrainingListeners.notifyEpochTrainingResult(eq(thread), any(IDataManager.StatEntry.class))).thenReturn(!stopOnNotifyEpochTrainingResult);
+        when(mockTrainingListeners.notifyNewEpisode(eq(thread))).thenReturn(!stopOnNotifyNewEpoch);
+        when(mockTrainingListeners.notifyEpisodeTrainingResult(eq(thread), any(IDataManager.StatEntry.class))).thenReturn(!stopOnNotifyEpochTrainingResult);
     }
 
     private void mockTrainingContext() {
@@ -135,7 +134,7 @@ public class AsyncThreadTest {
         // if we hit the max step count
         when(mockAsyncGlobal.isTrainingComplete()).thenAnswer(invocation -> thread.getStepCount() >= maxSteps);
 
-        when(thread.trainSubEpoch(any(Observation.class), anyInt())).thenAnswer(invocationOnMock -> {
+        when(thread.trainNSteps(any(Observation.class), anyInt())).thenAnswer(invocationOnMock -> {
             int steps = invocationOnMock.getArgument(1);
             thread.stepCount += steps;
             thread.currentEpisodeStepCount += steps;
@@ -156,7 +155,7 @@ public class AsyncThreadTest {
 
         // Assert
         verify(mockNeuralNet, times(10)).reset(); // there are 10 episodes so the network should be reset between each
-        assertEquals(10, thread.getEpochCount()); // We are performing a training iteration every 10 steps, so there should be 10 epochs
+        assertEquals(10, thread.getTrainingIterations()); // We are performing a training iteration every 10 steps, so there should be 10 epochs
         assertEquals(10, thread.getEpisodeCount()); // There should be 10 completed episodes
         assertEquals(100, thread.getStepCount()); // 100 steps overall
     }
@@ -171,7 +170,7 @@ public class AsyncThreadTest {
         thread.run();
 
         // Assert
-        assertEquals(0, thread.getEpochCount());
+        assertEquals(0, thread.getTrainingIterations());
         assertEquals(1, thread.getEpisodeCount());
         assertEquals(0, thread.getStepCount());
     }
@@ -186,7 +185,7 @@ public class AsyncThreadTest {
         thread.run();
 
         // Assert
-        assertEquals(1, thread.getEpochCount());
+        assertEquals(1, thread.getTrainingIterations());
         assertEquals(1, thread.getEpisodeCount());
         assertEquals(10, thread.getStepCount()); // one epoch is by default 10 steps
     }
@@ -201,7 +200,7 @@ public class AsyncThreadTest {
         thread.run();
 
         // Assert
-        assertEquals(20, thread.getEpochCount());
+        assertEquals(20, thread.getTrainingIterations());
         assertEquals(10, thread.getEpisodeCount());
         assertEquals(100, thread.getStepCount());
 
@@ -219,12 +218,12 @@ public class AsyncThreadTest {
         thread.run();
 
         // Assert
-        assertEquals(20, thread.getEpochCount());
+        assertEquals(20, thread.getTrainingIterations());
         assertEquals(10, thread.getEpisodeCount());
         assertEquals(100, thread.getStepCount());
 
         // Over 100 steps there will be 20 training iterations, so there will be 20 calls to notifyEpochTrainingResult
-        verify(mockTrainingListeners, times(20)).notifyEpochTrainingResult(eq(thread), any(IDataManager.StatEntry.class));
+        verify(mockTrainingListeners, times(20)).notifyEpisodeTrainingResult(eq(thread), any(IDataManager.StatEntry.class));
     }
 
     @Test
@@ -237,12 +236,12 @@ public class AsyncThreadTest {
         thread.run();
 
         // Assert
-        assertEquals(20, thread.getEpochCount());
+        assertEquals(20, thread.getTrainingIterations());
         assertEquals(10, thread.getEpisodeCount());
         assertEquals(100, thread.getStepCount());
 
         // There should be 20 calls to trainsubepoch with 5 steps per epoch
-        verify(thread, times(20)).trainSubEpoch(any(Observation.class), eq(5));
+        verify(thread, times(20)).trainNSteps(any(Observation.class), eq(5));
     }
 
     @Test
@@ -266,12 +265,12 @@ public class AsyncThreadTest {
         thread.run();
 
         // Assert
-        assertEquals(1, thread.getEpochCount());
+        assertEquals(1, thread.getTrainingIterations());
         assertEquals(1, thread.getEpisodeCount());
         assertEquals(100, thread.getStepCount());
 
         // There should be 1 call to trainsubepoch with 5 steps as this is the remaining episode steps
-        verify(thread, times(1)).trainSubEpoch(any(Observation.class), eq(5));
+        verify(thread, times(1)).trainNSteps(any(Observation.class), eq(5));
     }
 
 }

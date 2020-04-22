@@ -27,7 +27,7 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.deeplearning4j.gym.StepReply;
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.SyncLearning;
 import org.deeplearning4j.rl4j.mdp.MDP;
@@ -51,7 +51,7 @@ import java.util.List;
 @Slf4j
 public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A>>
                 extends SyncLearning<O, A, AS, IDQN>
-                implements TargetQNetworkSource, IEpochTrainer {
+                implements TargetQNetworkSource, IEpisodeTrainer {
 
     protected abstract LegacyMDPWrapper<O, A, AS> getLegacyMDPWrapper();
 
@@ -100,7 +100,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         double meanQ = 0;
         int numQ = 0;
         List<Double> scores = new ArrayList<>();
-        while (currentEpisodeStepCount < getConfiguration().getMaxEpochStep() && !getMdp().isDone()) {
+        while (currentEpisodeStepCount < getConfiguration().getMaxStepsPerEpisode() && !getMdp().isDone()) {
 
             if (this.getStepCount() % getConfiguration().getTargetDqnUpdateFreq() == 0) {
                 updateTargetNetwork();
@@ -128,7 +128,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
         meanQ /= (numQ + 0.001); //avoid div zero
 
 
-        StatEntry statEntry = new QLStatEntry(this.getStepCount(), getEpochCount(), reward, currentEpisodeStepCount, scores,
+        StatEntry statEntry = new QLStatEntry(this.getStepCount(), getTrainingIterations(), reward, currentEpisodeStepCount, scores,
                         getEgPolicy().getEpsilon(), startQ, meanQ);
 
         return statEntry;
@@ -226,7 +226,7 @@ public abstract class QLearning<O extends Encodable, A, AS extends ActionSpace<A
 
             return QLearningConfiguration.builder()
                     .seed(seed.longValue())
-                    .maxEpochStep(maxEpochStep)
+                    .maxStepsPerEpisode(maxEpochStep)
                     .maxStep(maxStep)
                     .expRepMaxSize(expRepMaxSize)
                     .batchSize(batchSize)

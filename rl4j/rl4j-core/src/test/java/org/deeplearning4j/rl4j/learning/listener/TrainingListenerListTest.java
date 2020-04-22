@@ -16,7 +16,7 @@
 
 package org.deeplearning4j.rl4j.learning.listener;
 
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.util.IDataManager;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 public class TrainingListenerListTest {
 
     @Mock
-    IEpochTrainer mockTrainer;
+    IEpisodeTrainer mockTrainer;
 
     @Mock
     ILearning mockLearning;
@@ -49,8 +49,8 @@ public class TrainingListenerListTest {
 
         // Act
         boolean resultTrainingStarted = trainingListenerList.notifyTrainingStarted();
-        boolean resultNewEpoch = trainingListenerList.notifyNewEpoch(null);
-        boolean resultEpochFinished = trainingListenerList.notifyEpochTrainingResult(null, null);
+        boolean resultNewEpoch = trainingListenerList.notifyNewEpisode(null);
+        boolean resultEpochFinished = trainingListenerList.notifyEpisodeTrainingResult(null, null);
 
         // Assert
         assertTrue(resultTrainingStarted);
@@ -74,8 +74,8 @@ public class TrainingListenerListTest {
 
         // Act
         trainingListenerList.notifyTrainingStarted();
-        trainingListenerList.notifyNewEpoch(mockTrainer);
-        trainingListenerList.notifyEpochTrainingResult(mockTrainer, null);
+        trainingListenerList.notifyNewEpisode(mockTrainer);
+        trainingListenerList.notifyEpisodeTrainingResult(mockTrainer, null);
         trainingListenerList.notifyTrainingProgress(mockLearning);
         trainingListenerList.notifyTrainingFinished();
 
@@ -108,8 +108,8 @@ public class TrainingListenerListTest {
 
         // Act
         boolean resultTrainingStarted = trainingListenerList.notifyTrainingStarted();
-        boolean resultNewEpoch = trainingListenerList.notifyNewEpoch(null);
-        boolean resultEpochTrainingResult = trainingListenerList.notifyEpochTrainingResult(null, null);
+        boolean resultNewEpoch = trainingListenerList.notifyNewEpisode(null);
+        boolean resultEpochTrainingResult = trainingListenerList.notifyEpisodeTrainingResult(null, null);
         boolean resultProgress = trainingListenerList.notifyTrainingProgress(null);
 
         // Assert

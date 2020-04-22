@@ -85,14 +85,13 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
 
 
     /**
-     * "Subepoch"  correspond to the t_max-step iterations
-     * that stack rewards with t_max MiniTrans
+     * Gather experience for a number of steps ({@param nStep}), compute gradients and update the target network if necessary
      *
-     * @param sObs  the obs to start from
-     * @param trainingSteps the number of training steps
-     * @return subepoch training informations
+     * @param sObs
+     * @param nSteps
+     * @return
      */
-    public SubEpochReturn trainSubEpoch(Observation sObs, int trainingSteps) {
+    public SubEpochReturn trainNSteps(Observation sObs, int nSteps) {
 
         current.copy(getAsyncGlobal().getTarget());
 
@@ -104,7 +103,7 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
         double reward = 0;
         double accuReward = 0;
 
-        while (!getMdp().isDone() && experienceHandler.getTrainingBatchSize() != trainingSteps) {
+        while (!getMdp().isDone() && experienceHandler.getTrainingBatchSize() != nSteps) {
 
             //if step of training, just repeat lastAction
             if (!obs.isSkipped()) {
@@ -126,9 +125,9 @@ public abstract class AsyncThreadDiscrete<O extends Encodable, NN extends Neural
 
         }
 
-        boolean episodeComplete = getMdp().isDone() || getConf().getMaxEpochStep() == currentEpisodeStepCount;
+        boolean episodeComplete = getMdp().isDone() || getConf().getMaxStepsPerEpisode() == currentEpisodeStepCount;
 
-        if (episodeComplete && experienceHandler.getTrainingBatchSize() != trainingSteps) {
+        if (episodeComplete && experienceHandler.getTrainingBatchSize() != nSteps) {
             experienceHandler.setFinalObservation(obs);
         }
 

@@ -19,7 +19,7 @@ package org.deeplearning4j.rl4j.util;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
@@ -148,7 +148,7 @@ public class DataManagerTrainingListenerTest {
         assertEquals(1, dm.saveCallCount);
     }
 
-    private static class TestTrainer implements IEpochTrainer, ILearning
+    private static class TestTrainer implements IEpisodeTrainer, ILearning
     {
         @Override
         public int getStepCount() {
@@ -156,7 +156,7 @@ public class DataManagerTrainingListenerTest {
         }
 
         @Override
-        public int getEpochCount() {
+        public int getTrainingIterations() {
             return 0;
         }
 

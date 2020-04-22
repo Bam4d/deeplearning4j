@@ -49,7 +49,7 @@ import org.nd4j.linalg.factory.Nd4j;
  */
 @Slf4j
 public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_SPACE extends ActionSpace<ACTION>, NN extends NeuralNet>
-                extends Thread implements IEpochTrainer {
+                extends Thread implements IEpisodeTrainer {
 
     @Getter
     private int threadNumber;
@@ -64,10 +64,10 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
     protected int stepCount = 0;
 
     /**
-     * The number of epochs (updates) that this thread has sent to the global learner
+     * The number of training iterations that this thread has sent to the global learner
      */
     @Getter @Setter
-    protected int epochCount = 0;
+    protected int trainingIterations = 0;
 
     /**
      * The number of environment episodes that have been played out
@@ -89,7 +89,6 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
     @Getter @Setter
     private IHistoryProcessor historyProcessor;
 
-    private boolean isEpisodeStarted = false;
     private final LegacyMDPWrapper<OBSERVATION, ACTION, ACTION_SPACE> mdp;
 
     private final TrainingListenerList listeners;
@@ -131,7 +130,7 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
      * This method will start the worker thread<p>
      * The thread will stop when:<br>
      * - The AsyncGlobal thread terminates or reports that the training is complete
-     * (see {@link AsyncGlobal#isTrainingComplete()}). In such case, the currently running epoch will still be handled normally and
+     * (see {@link AsyncGlobal#isTrainingComplete()}). In such case, the currently running episode will still be handled normally and
      * events will also be fired normally.<br>
      * OR<br>
      * - a listener explicitly stops it, in which case, the AsyncGlobal thread will be terminated along with
@@ -143,9 +142,9 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
      * TrainingListener.ListenerResponse.STOP}, the remaining listeners in the list won't be called.<br>
      * Events:
      * <ul>
-     *   <li>{@link TrainingListener#onNewEpoch(IEpochTrainer) onNewEpoch()} is called when a new epoch is started.</li>
-     *   <li>{@link TrainingListener#onEpochTrainingResult(IEpochTrainer, IDataManager.StatEntry) onEpochTrainingResult()} is called at the end of every
-     *   epoch. It will not be called if onNewEpoch() stops the training.</li>
+     *   <li>{@link TrainingListener#onNewEpisode(IEpisodeTrainer) onNewEpoch()} is called when a new episode is started.</li>
+     *   <li>{@link TrainingListener#onEpisodeTrainingResult(IEpisodeTrainer, IDataManager.StatEntry) onEpisodeTrainingResult()} is called at the end of every
+     *   episode. It will not be called if onNewEpoch() stops the training.</li>
      * </ul>
      */
     @Override
@@ -161,13 +160,13 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
                 startEpisode(context);
             }
 
-            if(!startEpoch(context)) {
+            if(!startTrainingIteration(context)) {
                 break;
             }
 
             episodeComplete = handleTraining(context);
 
-            if(!finishEpoch(context)) {
+            if(!finishTrainingIteration(context)) {
                 break;
             }
 
@@ -177,19 +176,19 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
         }
     }
 
-    private boolean finishEpoch(RunContext context) {
-        epochCount++;
-        IDataManager.StatEntry statEntry = new AsyncStatEntry(stepCount, epochCount, context.rewards, currentEpisodeStepCount, context.score);
-        return listeners.notifyEpochTrainingResult(this, statEntry);
+    private boolean finishTrainingIteration(RunContext context) {
+        trainingIterations++;
+        IDataManager.StatEntry statEntry = new AsyncStatEntry(stepCount, trainingIterations, context.rewards, currentEpisodeStepCount, context.score);
+        return listeners.notifyNewTrainingIteration(this, statEntry);
     }
 
-    private boolean startEpoch(RunContext context) {
-        return listeners.notifyNewEpoch(this);
+    private boolean startTrainingIteration(RunContext context) {
+        return listeners.notifyNewEpisode(this);
     }
 
     private boolean handleTraining(RunContext context) {
-        int maxTrainSteps = Math.min(getConf().getNStep(), getConf().getMaxEpochStep() - currentEpisodeStepCount);
-        SubEpochReturn subEpochReturn = trainSubEpoch(context.obs, maxTrainSteps);
+        int maxTrainSteps = Math.min(getConf().getNStep(), getConf().getMaxStepsPerEpisode() - currentEpisodeStepCount);
+        SubEpochReturn subEpochReturn = trainNSteps(context.obs, maxTrainSteps);
 
         context.obs = subEpochReturn.getLastObs();
         context.rewards += subEpochReturn.getReward();
@@ -212,7 +211,7 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
     private void finishEpisode(RunContext context) {
         postEpisode();
 
-        log.info("ThreadNum-{} Episode step: {}, Episode: {}, Epoch: {}, reward: {}", threadNumber, currentEpisodeStepCount, episodeCount, epochCount, context.rewards);
+        log.info("ThreadNum-{} Episode step: {}, Episode: {}, Epoch: {}, reward: {}", threadNumber, currentEpisodeStepCount, episodeCount, trainingIterations, context.rewards);
     }
 
     protected abstract NN getCurrent();
@@ -223,7 +222,7 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
 
     protected abstract IPolicy<ACTION> getPolicy(NN net);
 
-    protected abstract SubEpochReturn trainSubEpoch(Observation obs, int nstep);
+    protected abstract SubEpochReturn trainNSteps(Observation obs, int nstep);
 
     private Learning.InitMdp<Observation> refacInitMdp() {
         currentEpisodeStepCount = 0;
@@ -267,9 +266,15 @@ public abstract class AsyncThread<OBSERVATION extends Encodable, ACTION, ACTION_
     public static class AsyncStatEntry implements IDataManager.StatEntry {
         int stepCounter;
         int epochCounter;
+        int trainingIterationCounter;
         double reward;
         int episodeLength;
         double score;
+
+        @Override
+        public int getEpisodeCounter() {
+            return epochCounter;
+        }
     }
 
     private static class RunContext {

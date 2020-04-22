@@ -16,7 +16,7 @@
 
 package org.deeplearning4j.rl4j.learning.listener;
 
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.util.IDataManager;
 
@@ -66,9 +66,15 @@ public class TrainingListenerList {
      * Notify the listeners that a new epoch has started. Will stop early if a listener returns {@link org.deeplearning4j.rl4j.learning.listener.TrainingListener.ListenerResponse#STOP}
      * @return whether or not the source training should be stopped
      */
-    public boolean notifyNewEpoch(IEpochTrainer trainer) {
+    public boolean notifyNewEpisode(IEpisodeTrainer trainer) {
         for (TrainingListener listener : listeners) {
+
+            // Check the deprecated version first
             if (listener.onNewEpoch(trainer) == TrainingListener.ListenerResponse.STOP) {
+                return false;
+            }
+
+            if (listener.onNewEpisode(trainer) == TrainingListener.ListenerResponse.STOP) {
                 return false;
             }
         }
@@ -80,9 +86,37 @@ public class TrainingListenerList {
      * Notify the listeners that an epoch has been completed and the training results are available. Will stop early if a listener returns {@link org.deeplearning4j.rl4j.learning.listener.TrainingListener.ListenerResponse#STOP}
      * @return whether or not the source training should be stopped
      */
-    public boolean notifyEpochTrainingResult(IEpochTrainer trainer, IDataManager.StatEntry statEntry) {
+    public boolean notifyEpisodeTrainingResult(IEpisodeTrainer trainer, IDataManager.StatEntry statEntry) {
         for (TrainingListener listener : listeners) {
+
+            // Check the deprecated version first
             if (listener.onEpochTrainingResult(trainer, statEntry) == TrainingListener.ListenerResponse.STOP) {
+                return false;
+            }
+
+            if (listener.onEpisodeTrainingResult(trainer, statEntry) == TrainingListener.ListenerResponse.STOP) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //TODO: docs
+    public boolean notifyNewTrainingIteration(IEpisodeTrainer trainer) {
+        for (TrainingListener listener : listeners) {
+            if (listener.onNewTrainingIteration(trainer) == TrainingListener.ListenerResponse.STOP) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //TODO: docs
+    public boolean notifyTrainingIterationResult(IEpisodeTrainer trainer, IDataManager.StatEntry statEntry) {
+        for (TrainingListener listener : listeners) {
+            if (listener.onTrainingIterationResult(trainer, statEntry) == TrainingListener.ListenerResponse.STOP) {
                 return false;
             }
         }

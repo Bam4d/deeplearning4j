@@ -1,6 +1,5 @@
 package org.deeplearning4j.rl4j.learning.sync;
 
-import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.learning.configuration.ILearningConfiguration;
 import org.deeplearning4j.rl4j.learning.listener.TrainingListener;
 import org.deeplearning4j.rl4j.learning.sync.support.MockStatEntry;
@@ -46,7 +45,7 @@ public class SyncLearningTest {
         when(syncLearning.trainEpoch()).thenAnswer(invocation -> {
             //syncLearning.incrementEpoch();
             syncLearning.incrementStep();
-            return new MockStatEntry(syncLearning.getEpochCount(), syncLearning.getStepCount(), 1.0);
+            return new MockStatEntry(syncLearning.getTrainingIterations(), syncLearning.getStepCount(), 1.0);
         });
 
         when(syncLearning.getConfiguration()).thenReturn(mockLearningConfiguration);

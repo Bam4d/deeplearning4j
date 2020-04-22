@@ -32,7 +32,15 @@ public interface IDataManager {
     //In order for jackson to serialize StatEntry
     //please use Lombok @Value (see QLStatEntry)
     interface StatEntry {
+
+        @Deprecated
         int getEpochCounter();
+
+        //TODO: docs
+        int getEpisodeCounter();
+
+        //TODO: docs
+        int getTrainingIterationCounter();
 
         int getStepCounter();
 

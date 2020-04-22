@@ -16,7 +16,7 @@
 
 package org.deeplearning4j.rl4j.learning.async.listener;
 
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.learning.listener.*;
 import org.deeplearning4j.rl4j.util.IDataManager;
@@ -33,8 +33,8 @@ public class AsyncTrainingListenerListTest {
 
         // Act
         boolean resultTrainingStarted = sut.notifyTrainingStarted();
-        boolean resultNewEpoch = sut.notifyNewEpoch(null);
-        boolean resultEpochTrainingResult = sut.notifyEpochTrainingResult(null, null);
+        boolean resultNewEpoch = sut.notifyNewEpisode(null);
+        boolean resultEpochTrainingResult = sut.notifyEpisodeTrainingResult(null, null);
 
         // Assert
         assertTrue(resultTrainingStarted);
@@ -53,7 +53,7 @@ public class AsyncTrainingListenerListTest {
         sut.add(listener2);
 
         // Act
-        sut.notifyEpochTrainingResult(null, null);
+        sut.notifyEpisodeTrainingResult(null, null);
 
         // Assert
         assertEquals(1, listener1.onEpochTrainingResultCallCount);
@@ -70,7 +70,7 @@ public class AsyncTrainingListenerListTest {
         sut.add(listener2);
 
         // Act
-        boolean resultTrainingProgress = sut.notifyEpochTrainingResult(null, null);
+        boolean resultTrainingProgress = sut.notifyEpisodeTrainingResult(null, null);
 
         // Assert
         assertTrue(resultTrainingProgress);
@@ -94,20 +94,40 @@ public class AsyncTrainingListenerListTest {
         }
 
         @Override
-        public ListenerResponse onNewEpoch(IEpochTrainer trainer) {
-            return ListenerResponse.CONTINUE;
+        public ListenerResponse onEpochTrainingResult(IEpisodeTrainer trainer, IDataManager.StatEntry statEntry) {
+            ++onEpochTrainingResultCallCount;
+            return onTrainingResultResponse;
         }
 
         @Override
-        public ListenerResponse onEpochTrainingResult(IEpochTrainer trainer, IDataManager.StatEntry statEntry) {
-            ++onEpochTrainingResultCallCount;
-            return onTrainingResultResponse;
+        public ListenerResponse onEpisodeTrainingResult(IEpisodeTrainer trainer) {
+            return null;
         }
 
         @Override
         public ListenerResponse onTrainingProgress(ILearning learning) {
             ++onTrainingProgressCallCount;
             return onTrainingProgressResponse;
+        }
+
+        @Override
+        public ListenerResponse onNewTrainingIteration(IEpisodeTrainer trainer) {
+            return ListenerResponse.STOP;
+        }
+
+        @Override
+        public ListenerResponse onTrainingIterationResult(IEpisodeTrainer trainer) {
+            return ListenerResponse.STOP;
+        }
+
+        @Override
+        public ListenerResponse onNewEpoch(IEpisodeTrainer trainer) {
+            return ListenerResponse.CONTINUE;
+        }
+
+        @Override
+        public ListenerResponse onNewEpisode(IEpisodeTrainer trainer) {
+            return ListenerResponse.STOP;
         }
     }
 

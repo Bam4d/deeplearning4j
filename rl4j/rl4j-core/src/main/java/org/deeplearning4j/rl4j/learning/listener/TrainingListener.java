@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.deeplearning4j.rl4j.learning.listener;
 
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.util.IDataManager;
 
@@ -39,6 +39,7 @@ public interface TrainingListener {
 
     /**
      * Called once when the training starts.
+     *
      * @return A ListenerResponse telling the source of the event if it should go on or cancel the training.
      */
     ListenerResponse onTrainingStart();
@@ -50,23 +51,51 @@ public interface TrainingListener {
 
     /**
      * Called before the start of every epoch.
-     * @param trainer A {@link IEpochTrainer}
+     *
+     * @param trainer A {@link IEpisodeTrainer}
+     * @return A ListenerResponse telling the source of the event if it should continue or stop the training.
+     * @deprecated use {@link #onNewEpisode} for events to the start of an episode and {@link #onNewTrainingIteration} for each training iteration
+     */
+    @Deprecated
+    ListenerResponse onNewEpoch(IEpisodeTrainer trainer);
+
+    /**
+     * Called before the start of every episode.
+     *
+     * @param trainer A {@link IEpisodeTrainer}
      * @return A ListenerResponse telling the source of the event if it should continue or stop the training.
      */
-    ListenerResponse onNewEpoch(IEpochTrainer trainer);
+    ListenerResponse onNewEpisode(IEpisodeTrainer trainer);
 
     /**
      * Called when an epoch has been completed
-     * @param trainer A {@link IEpochTrainer}
+     *
+     * @param trainer   A {@link IEpisodeTrainer}
+     * @param statEntry A {@link org.deeplearning4j.rl4j.util.IDataManager.StatEntry}
+     * @return A ListenerResponse telling the source of the event if it should continue or stop the training.
+     * @deprecated use {@link #onEpisodeTrainingResult} for the end of an episode and {@link #onTrainingIterationResult} for each training iteration
+     */
+    @Deprecated
+    ListenerResponse onEpochTrainingResult(IEpisodeTrainer trainer, IDataManager.StatEntry statEntry);
+
+    /**
+     * Called when an episode has been completed
+     *
+     * @param trainer   A {@link IEpisodeTrainer}
      * @param statEntry A {@link org.deeplearning4j.rl4j.util.IDataManager.StatEntry}
      * @return A ListenerResponse telling the source of the event if it should continue or stop the training.
      */
-    ListenerResponse onEpochTrainingResult(IEpochTrainer trainer, IDataManager.StatEntry statEntry);
+    ListenerResponse onEpisodeTrainingResult(IEpisodeTrainer trainer, IDataManager.StatEntry statEntry);
 
     /**
      * Called regularly to monitor the training progress.
+     *
      * @param learning A {@link ILearning}
      * @return A ListenerResponse telling the source of the event if it should continue or stop the training.
      */
     ListenerResponse onTrainingProgress(ILearning learning);
+
+    ListenerResponse onNewTrainingIteration(IEpisodeTrainer trainer);
+
+    ListenerResponse onTrainingIterationResult(IEpisodeTrainer trainer, IDataManager.StatEntry statEntry);
 }

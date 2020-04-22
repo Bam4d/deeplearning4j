@@ -19,7 +19,7 @@ package org.deeplearning4j.rl4j.learning.sync;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.deeplearning4j.rl4j.learning.IEpochTrainer;
+import org.deeplearning4j.rl4j.learning.IEpisodeTrainer;
 import org.deeplearning4j.rl4j.learning.ILearning;
 import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.learning.listener.*;
@@ -37,7 +37,7 @@ import org.deeplearning4j.rl4j.util.IDataManager;
  */
 @Slf4j
 public abstract class SyncLearning<OBSERVATION extends Encodable, ACTION, ACTION_SPACE extends ActionSpace<ACTION>, NN extends NeuralNet>
-        extends Learning<OBSERVATION, ACTION, ACTION_SPACE, NN> implements IEpochTrainer {
+        extends Learning<OBSERVATION, ACTION, ACTION_SPACE, NN> implements IEpisodeTrainer {
 
     private final TrainingListenerList listeners = new TrainingListenerList();
 
@@ -75,7 +75,7 @@ public abstract class SyncLearning<OBSERVATION extends Encodable, ACTION, ACTION
      * Events:
      * <ul>
      *   <li>{@link TrainingListener#onTrainingStart() onTrainingStart()} is called once when the training starts.</li>
-     *   <li>{@link TrainingListener#onNewEpoch(IEpochTrainer) onNewEpoch()} and {@link TrainingListener#onEpochTrainingResult(IEpochTrainer, IDataManager.StatEntry) onEpochTrainingResult()}  are called for every epoch. onEpochTrainingResult will not be called if onNewEpoch stops the training</li>
+     *   <li>{@link TrainingListener#onNewEpoch(IEpisodeTrainer) onNewEpoch()} and {@link TrainingListener#onEpochTrainingResult(IEpisodeTrainer, IDataManager.StatEntry) onEpochTrainingResult()}  are called for every epoch. onEpochTrainingResult will not be called if onNewEpoch stops the training</li>
      *   <li>{@link TrainingListener#onTrainingProgress(ILearning) onTrainingProgress()} is called after onEpochTrainingResult()</li>
      *   <li>{@link TrainingListener#onTrainingEnd() onTrainingEnd()} is always called at the end of the training, even if the training was cancelled by a listener.</li>
      * </ul>
@@ -88,27 +88,27 @@ public abstract class SyncLearning<OBSERVATION extends Encodable, ACTION, ACTION
         if (canContinue) {
             while (this.getStepCount() < getConfiguration().getMaxStep()) {
                 preEpoch();
-                canContinue = listeners.notifyNewEpoch(this);
+                canContinue = listeners.notifyNewEpisode(this);
                 if (!canContinue) {
                     break;
                 }
 
                 IDataManager.StatEntry statEntry = trainEpoch();
-                canContinue = listeners.notifyEpochTrainingResult(this, statEntry);
+                canContinue = listeners.notifyEpisodeTrainingResult(this, statEntry);
                 if (!canContinue) {
                     break;
                 }
 
                 postEpoch();
 
-                if(getEpochCount() % progressMonitorFrequency == 0) {
+                if(getTrainingIterations() % progressMonitorFrequency == 0) {
                     canContinue = listeners.notifyTrainingProgress(this);
                     if (!canContinue) {
                         break;
                     }
                 }
 
-                log.info("Epoch: " + getEpochCount() + ", reward: " + statEntry.getReward());
+                log.info("Epoch: " + getTrainingIterations() + ", reward: " + statEntry.getReward());
                 incrementEpoch();
             }
         }
